@@ -1,0 +1,1619 @@
+---
+title: When and why people think beliefs are "debunked" by scientific explanations
+  for their origins
+author:
+- Dillon Plunkett
+- Lara Buchak
+- Tania Lombrozo
+date: September 21, 2018
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    df_print: kable
+  html_document:
+    toc: true
+    toc_depth: 2
+    df_print: kable
+  github_document:
+    toc: true
+    toc_depth: 2
+    df_print: kable
+---
+
+
+
+# Setup 
+
+Load exact versions of packages used in reported analyses.
+```{r message = FALSE}
+if (!require(checkpoint, quietly = TRUE))  {
+  install.packages("checkpoint")
+  require(checkpoint)
+}
+checkpoint("2018-09-21")
+library(tidyverse)
+library(magrittr)
+library(broom)
+library(car)
+library(heplots)
+library(WRS2)
+library(dae)
+library(ez)
+library(knitr)
+
+op <- options(contrasts = c("contr.sum", "contr.poly"))
+```
+```{r, include = FALSE}
+options(digits = 4, knitr.kable.NA = "")
+opts_chunk$set(fig.path = "markdown-figs/")
+# Note: PDF output can handle listing more than one author in the metadata, 
+# in this way so HTML and Markdown output were edited manually after rendering.
+```
+
+These two plotting functions are used throughout.
+```{r}
+vio_dot <- function(data, y, x, color = NULL, dotsize = 0.4) {
+  data %>%
+    ggplot(aes_string(y = y, x = x, color = color)) +
+    geom_violin() +
+    geom_dotplot(
+      aes_string(fill = color),
+      position="dodge",
+      binaxis = "y", stackdir = "center", binwidth = 0.2,
+      dotsize = dotsize
+    )
+}
+paper_plot <- function(data, y, x, x_lab, color, color_lab, ylim, dodge) {
+  data %>%
+    ggplot(aes_string(x = x, y = y, color = color)) +
+    geom_hline(yintercept = 0) +
+    geom_pointrange(
+      stat = "summary",
+      fun.data = mean_se,
+      position = position_dodge(dodge)
+    ) +
+    geom_errorbar(
+      stat = "summary",
+      fun.data = mean_se,
+      position = position_dodge(dodge),
+      width = 0.1,
+      show.legend = FALSE
+    ) +
+    scale_color_grey(name = color_lab, labels = str_to_title) +
+    scale_x_discrete(name = x_lab, labels = str_to_title) +
+    coord_cartesian(ylim = ylim) +
+    labs(y = "Suggested Change in Confidence") +
+    theme_classic() +
+    theme(
+      legend.position = "top",
+      axis.line.x = element_blank(),
+      axis.ticks.x = element_blank()
+    )
+}
+```
+
+ANOVA with $\eta^2$
+```{r}
+ANOVA <- function(lm) {
+  lm %>% 
+    Anova(type = "III") %>% 
+    tidy() %>% 
+    slice(-1) %>%  # Drop intercept.
+    bind_cols(etasq(lm))
+}
+```
+
+# Experiment 1
+
+Load data.
+```{r message = FALSE}
+exp1_raw <- read_csv("data/experiment1_data.csv")
+exp1_data <-
+  exp1_raw %>%
+  select(
+    participant_id = ResponseId,
+    consent = Q1,
+    michael_should = Q20, you_should = Q22,
+    michael_would = Q100, you_would = Q14,
+    germ_theory = Q101_1_1, evolution = Q101_3_1, god = Q101_5_1,
+    soulmate = Q101_7_1, murder_wrong = Q101_9_1, vegetarianism = Q101_11_1,
+    attention_check = Q13_9_TEXT, done_before = Q106,
+    sex = Q81, age = Q82,
+    valence = AcceptReject, domain = SciRelMor, prevalence = CommonRare,
+    own_belief = TargetRating,
+    condition = FalseNeutralTrue
+  ) %>%
+  # Drop extra header rows.
+  slice(-1:-2) %>%
+  type_convert() %>%
+  # Center Likerts at 0.
+  mutate_at(
+    vars(contains("should"), contains("would"), own_belief),
+    funs(. - 4)
+  ) %>%
+  mutate(
+    agrees_with_michael = own_belief > 0,
+    common_avg = (germ_theory + god + murder_wrong) / 3,
+    rare_avg = (evolution + soulmate + vegetarianism) / 3,
+    consent = consent %>%
+      recode_factor("2" = "consent", "1" = "no_consent"),
+    done_before = done_before %>%
+      recode_factor("1" = "yes", "2" = "maybe", "3" = "no"),
+    sex = sex %>%
+      recode_factor("1" = "male", "2" = "female", "3" = "other"),
+    domain = domain %>%
+      recode_factor("1" = "scientific", "2" = "religious", "3" = "moral"),
+    prevalence = prevalence %>%
+      recode_factor("1" = "common", "2" = "rare"),
+    condition = condition %>%
+      recode_factor(
+        "True" = "reliable",
+        "Neutral" = "neutral",
+        "False" = "unreliable"
+      ),
+    pass_check = grepl("dax", attention_check, ignore.case = TRUE)
+  ) %>%
+  mutate_at(
+    vars(contains("you_")),
+    funs(. * if_else(agrees_with_michael, 1, -1))
+  )
+```
+```{r include = FALSE}
+exp1_data %>% write_csv("data/tidy-data/experiment1_tidy.csv")
+```
+
+## Participants
+10 participants didn't complete the experiment. Another 17 participants think
+they might have done a similar study before. 22 of the rest missed a catch
+question. Analyses will focus on data from the remaining 173 participants.
+```{r results = "hold", R.options = list(knitr.kable.NA = NA)}
+exp1_data %>%
+  filter(consent == "consent") %>%
+  # Don't count leaving attention check blank as not finishing, just as wrong.
+  select(-attention_check) %>%
+  count(complete.cases(.), done_before, pass_check)
+exp1_included <-
+  exp1_data %>%
+  drop_na() %>%
+  filter(done_before == "no", pass_check)
+```
+
+### Demographics
+```{r}
+exp1_included %>% select(sex, age) %>% summary() %>% kable()
+```
+
+### Inclusion/exclusion by conditions
+```{r}
+exp1_included %>% count(condition, prevalence) %>% spread(prevalence, n)
+```
+
+## Distribution and Means
+```{r fig.height=3}
+exp1_included %>% vio_dot("michael_should", "condition", "prevalence")
+exp1_included %>% vio_dot("michael_would", "condition", "prevalence")
+```
+
+### Group means
+Reliable mechanisms are taken to support belief, as are neutral explanations 
+(only somewhat less strongly), while unreliable mechanisms are taken to 
+undermine belief. This is consistent across common and rare target beliefs, 
+and also seen in predictive judgments (about what people would do). Values are 
+overall higher for common target beliefs. 
+```{r}
+exp1_included %$% 
+  tapply(michael_should, list(condition, prevalence), mean) %>%
+  kable()
+exp1_included %$% 
+  tapply(michael_would, list(condition, prevalence), mean) %>%
+  kable()
+```
+
+Things are qualitatively the same across domains, except that people don't say 
+unreliable mechanisms should undermine moral beliefs (mean response lower than
+for neutral explanations, but still slightly positive). 
+```{r}
+exp1_included %$% 
+  tapply(michael_should, list(condition, domain), mean) %>%
+  kable()
+exp1_included %$% 
+  tapply(michael_would, list(condition, domain), mean) %>%
+  kable()
+```
+
+The main effect of prevalence is also consistent across domains. 
+```{r}
+exp1_included %$% 
+  tapply(michael_should, list(prevalence, domain), mean) %>%
+  kable()
+exp1_included %$% 
+  tapply(michael_would, list(prevalence, domain), mean) %>%
+  kable()
+```
+
+## Plot for Paper
+```{r}
+exp1_included %>%
+  paper_plot(
+    y = "michael_should",
+    x = "domain", x_lab = "Belief Domain",
+    color = "condition", color_lab = "Epistemic Condition",
+    ylim = c(-1, 2), dodge = 0.25
+  )
+```
+```{r include=FALSE}
+ggsave("figures/experiment1.png", width = 5, height = 3, units = "in")
+```
+
+## ANOVAs
+Main effects of epistemic condition and claim prevalence, no interaction. All
+pairwise differences between epistemic conditions are significant. 
+```{r}
+exp1_should_lm <- exp1_included %$% lm(michael_should ~ condition * prevalence)
+ANOVA(exp1_should_lm)
+exp1_included %$% pairwise.t.test(michael_should, condition, "holm")
+```
+An analogous ANOVA analyzing the predictive judgments (about what the subject 
+of the vignette _would_ do, as opposed to what he _should_ do) finds the same 
+effects. 
+```{r}
+exp1_would_lm <- exp1_included %$% lm(michael_would ~ condition * prevalence)
+ANOVA(exp1_would_lm)
+exp1_included %$% pairwise.t.test(michael_would, condition, "holm")
+```
+
+### Check assumptions for ANOVAs
+Shapiro-Wilk test is significant, but the results are the same using a 
+robust test, and previous visualization didn't suggest any issues with using 
+the mean as a summary statistic.
+```{r}
+exp1_included %$% leveneTest(michael_should ~ condition * prevalence)
+exp1_included %$% leveneTest(michael_would ~ condition * prevalence)
+exp1_should_lm %>% residuals() %>% shapiro.test()
+exp1_would_lm %>% residuals() %>% shapiro.test()
+exp1_included %$% t2way(michael_should ~ condition * prevalence)
+exp1_included %$% t2way(michael_would ~ condition * prevalence)
+```
+
+## Belief Reinforcement/Undermining
+```{r}
+exp1_included %>%
+  group_by(condition) %>%
+  summarise(
+    michael_should = mean(michael_should),
+    michael_would = mean(michael_would)
+  )
+```
+
+Tests against the scale midpoint confirm reinforcement for reliable and 
+neutral mechanisms, undermining for unreliable mechanisms. 
+```{r}
+exp1_included %>%
+  group_by(condition) %>%
+  do(tidy(t.test(.$michael_should))) %>% 
+  select(-c(method, alternative))
+exp1_included %>%
+  group_by(condition) %>%
+  do(tidy(t.test(.$michael_would))) %>% 
+  select(-c(method, alternative))
+```
+
+## Verify Perceived Prevalence
+The "common" beliefs are indeed perceived to be more prevalent than the "rare"
+beliefs. 
+```{r}
+exp1_included %>%
+  select(germ_theory:vegetarianism) %>%
+  summarize_all(funs(mean))
+exp1_included %$% t.test(common_avg, rare_avg, paired = TRUE)
+```
+
+
+
+# Experiment 2
+
+Load data.
+```{r warning = FALSE, message = FALSE}
+exp2_raw <- read_csv("data/experiment2_data.csv")
+exp2_data <-
+  exp2_raw %>%
+  select(
+    participant_id = ResponseId,
+    consent = Q1,
+    michael_would = Q100, you_would = Q14,
+    michael_should = Q14_1, you_should = Q17,
+    attention_check = Q13_9_TEXT, done_before = Q106,
+    sex = Q81, age = Q82,
+    valence = AcceptReject, domain = SciRelMor, prevalence = CommonRare,
+    condition = NormallyAbnormally
+  ) %>%
+  # Drop extra header rows.
+  slice(-1:-2) %>%
+  type_convert() %>%
+  # Center Likerts at 0.
+  mutate_at(
+    vars(contains("should"), contains("would")),
+    funs(. - 4)
+  ) %>%
+  mutate(
+    consent = consent %>%
+      recode_factor("2" = "consent", "1" = "no_consent"),
+    done_before = done_before %>%
+      recode_factor("1" = "yes", "2" = "maybe", "3" = "no"),
+    sex = sex %>%
+      recode_factor("1" = "male", "2" = "female", "3" = "other"),
+    domain = domain %>%
+      recode_factor("1" = "scientific", "2" = "religious", "3" = "moral"),
+    prevalence = prevalence %>%
+      recode_factor("1" = "common", "2" = "rare"),
+    condition = condition %>%
+      recode_factor("normally" = "normal", "abnormally" = "abnormal"),
+    pass_check = grepl("dax", attention_check, ignore.case = TRUE)
+  )
+```
+```{r include = FALSE}
+exp2_data %>% write_csv("data/tidy-data/experiment2_tidy.csv")
+```
+
+
+## Participants
+
+7 participants didn't complete the experiment. Another 7 participants think
+they might have done a similar study before. 4 of the rest missed a catch
+question. Analyses will focus on data from the remaining 107 participants. 
+```{r results = "hold"}
+exp2_data %>%
+  filter(consent == "consent") %>%
+  # Don't count leaving attention check blank as not finishing, just as wrong.
+  select(-attention_check) %>%
+  count(complete.cases(.), done_before, pass_check)
+exp2_included <-
+  exp2_data %>%
+  drop_na() %>%
+  filter(done_before == "no", pass_check)
+```
+
+### Demographics
+```{r}
+exp2_included %>% select(sex, age) %>% summary() %>% kable()
+```
+
+### Inclusion/exclusion by conditions
+```{r}
+exp2_included %>% count(condition, prevalence) %>% spread(prevalence, n)
+```
+
+## Distribution and Means
+```{r fig.height=3}
+exp2_included %>% vio_dot("michael_should", "condition", "prevalence")
+exp2_included %>% vio_dot("michael_would", "condition", "prevalence")
+```
+
+### Group means
+Association with a normal mechanism, but not an abnormal mechanism, seems to 
+be taken as support for a belief. This is consistent across common and rare
+beliefs. No evidence of a main effect of belief prevalence in this sample. 
+```{r}
+exp2_included %$% 
+  tapply(michael_should, list(condition, prevalence), mean) %>%
+  kable()
+exp2_included %$% 
+  tapply(michael_would, list(condition, prevalence), mean) %>%
+  kable()
+```
+
+The same qualitative pattern is seen across belief domains.
+```{r}
+exp2_included %$% 
+  tapply(michael_should, list(condition, domain), mean) %>%
+  kable()
+exp2_included %$% 
+  tapply(michael_would, list(condition, domain), mean) %>%
+  kable()
+```
+
+## Plot for Paper
+```{r}
+exp2_included %>%
+  paper_plot(
+    y = "michael_should",
+    x = "domain", x_lab = "Belief Domain",
+    color = "condition", color_lab = "Mechanism Type",
+    ylim = c(-0.75, 1.25), dodge = 0.5
+  )
+```
+```{r include = FALSE}
+ggsave("figures/experiment2.png", width = 5, height = 3, units = "in")
+```
+
+## ANOVAs
+Main effect of the type of mechanism associated with the target belief 
+(normal/abnormal). No effect of prevalence of the target belief and no 
+interaction.
+```{r}
+exp2_should_lm <-
+  exp2_included %$% lm(michael_should ~ condition * prevalence)
+ANOVA(exp2_should_lm)
+```
+
+As in Experiment 1, the same effects are seen for predictive judgments.
+```{r}
+exp2_would_lm <- exp2_included %$% lm(michael_would ~ condition * prevalence)
+ANOVA(exp2_would_lm)
+```
+
+### Check assumptions for ANOVAs
+Shapiro-Wilk test is again significant, but the results are again the same 
+using a robust test, and previous visualization again didn't suggest any 
+issues with using the mean as a summary statistic.
+```{r}
+exp2_included %$% leveneTest(michael_should ~ condition * prevalence)
+exp2_included %$% leveneTest(michael_would ~ condition * prevalence)
+exp2_should_lm %>% residuals() %>% shapiro.test()
+exp2_included %$% t2way(michael_should ~ condition * prevalence)
+exp2_included %$% t2way(michael_would ~ condition * prevalence)
+```
+
+## Belief Reinforcement/Undermining
+```{r}
+exp2_included %>%
+  group_by(condition) %>%
+  summarise(
+    michael_should = mean(michael_should),
+    michael_would = mean(michael_would)
+  )
+```
+
+Testing against the scale midpoint confirms reinforcement for association with 
+normal mechanisms, no evidence of reinforcement for abnormal mechanisms. 
+```{r}
+exp2_included %>%
+  group_by(condition) %>%
+  do(tidy(t.test(.$michael_should))) %>% 
+  select(-c(method, alternative))
+exp2_included %>%
+  group_by(condition) %>%
+  do(tidy(t.test(.$michael_would))) %>% 
+  select(-c(method, alternative))
+```
+
+
+
+# Experiment 3
+
+Load data.
+```{r message = FALSE}
+exp3_raw <- read_csv("data/experiment3_data.csv")
+exp3_data <-
+  exp3_raw %>%
+  select(
+    participant_id = ResponseId,
+    consent = Q1,
+    michael_would_1 = Q100, michael_should_1 = Q15,
+    you_would.1 = Q14, you_should_1 = Q16,
+    michael_would_2 = Q119, michael_should_2 = Q118,
+    you_would_2 = Q122, you_should_2 = Q121,
+    plausible = Q97,
+    attention_check = Q13_9_TEXT, comp_check_1 = Q19, comp_check_2 = Q20,
+    done_before = Q106,
+    sex = Q81, age = Q82,
+    valence = AcceptReject, domain = SciRelMor, prevalence = CommonRare,
+    own_belief = TargetRating,
+    discipline = ExplanationType,
+    condition = NormalAbnormal
+  ) %>%
+  # Drop extra header rows.
+  slice(-1:-2) %>%
+  type_convert() %>%
+  mutate(
+    consent = consent %>%
+      recode_factor("2" = "consent", "1" = "no_consent"),
+    done_before = done_before %>%
+      recode_factor("1" = "yes", "2" = "maybe", "3" = "no"),
+    sex = sex %>%
+      recode_factor("1" = "male", "2" = "female", "3" = "other"),
+    domain = domain %>%
+      recode_factor("1" = "scientific", "2" = "religious", "3" = "moral"),
+    prevalence = prevalence %>%
+      recode_factor("1" = "common", "2" = "rare"),
+    condition = condition %>%
+      recode_factor("Normal" = "normal", "Abnormal" = "abnormal"),
+    valence = valence %>%
+      recode_factor("1" = "accept", "2" = "reject"),
+    discipline = discipline %>%
+      recode_factor(
+        "Neuro" = "neuroscience",
+        "Genetic" = "genetic",
+        "Psychological" = "psychological",
+        "Developmental" = "developmental"
+      ),
+    michael_would = pmax(michael_would_1, michael_would_2, na.rm = TRUE),
+    michael_should = pmax(michael_should_1, michael_should_2, na.rm = TRUE),
+    you_would = pmax(you_would.1, you_would_2, na.rm = TRUE),
+    you_should = pmax(you_should_1, you_should_2, na.rm = TRUE),
+    pass_old_imc = grepl("dax", attention_check, ignore.case = TRUE),
+    pass_check = pass_old_imc & comp_check_1 == 45 & comp_check_2 == 1
+  ) %>%
+  select(-(michael_would_1:you_should_2)) %>%
+  # Center Likerts at 0.
+  mutate_at(
+    vars(contains("should"), contains("would"), own_belief),
+    funs(. - 4)
+  ) %>%
+  mutate(
+    agrees_with_michael = ((valence == "accept" & own_belief > 0)
+                           | (valence == "reject" & own_belief < 0))
+  ) %>%
+  mutate_at(
+    vars(contains("michael_")),
+    funs(. * if_else(valence == "accept", 1, -1))
+  ) %>%
+  mutate_at(
+    vars(contains("you_")),
+    funs(. * if_else(own_belief > 0, 1, -1))
+  )
+```
+```{r include = FALSE}
+exp3_data %>% write_csv("data/tidy-data/experiment3_tidy.csv")
+```
+
+## Participants
+32 participants didn't complete the experiment. Another 56 participants think
+they might have done a similar study before. 33 missed an easy catch
+question. 129 missed a specific reading comprehension question.
+Analyses will focus on data from the remaining 258 participants. 
+```{r}
+exp3_consented <-
+  exp3_data %>%
+  filter(consent == "consent") %>%
+  # Don't count leaving attention check blank as not finishing, just as wrong.
+  select(-attention_check)
+exp3_consented %>% count(complete.cases(.))
+exp3_consented %>% drop_na() %>% count(done_before)
+exp3_consented %>%
+  drop_na() %>%
+  filter(done_before == "no") %>%
+  count(pass_old_imc, pass_check)
+exp3_included <-
+  exp3_data %>%
+  drop_na() %>%
+  filter(done_before == "no", pass_old_imc, pass_check)
+```
+
+### Demographics
+```{r}
+exp3_included %>% select(sex, age) %>% summary() %>% kable()
+```
+
+### Inclusion/exclusion by conditions
+```{r}
+exp3_included %>% count(condition, discipline, prevalence)
+```
+
+## Distribution and Means
+```{r fig.height=3}
+exp3_included %>%
+  vio_dot("michael_should", "condition", "discipline", dotsize = 0.25)
+exp3_included %>%
+  vio_dot("michael_would", "condition",  "discipline", dotsize = 0.35)
+```
+
+### Group means
+Association with a normal mechanism is still consistently taken to support 
+belief reinforcement, whereas association with an abnormal mechanism is not. 
+Only exception is the cognitive explanation (and only absent there for 
+the normative judgment, not the predictive one).
+```{r}
+exp3_included %$% 
+  tapply(michael_should, list(condition, discipline), mean) %>%
+  kable()
+exp3_included %$% 
+  tapply(michael_would, list(condition, discipline), mean) %>%
+  kable()
+```
+
+Effect of normality is again qualitatively the same across domains.
+```{r}
+exp3_included %$% 
+  tapply(michael_should, list(condition, domain), mean) %>%
+  kable()
+exp3_included %$% 
+  tapply(michael_would, list(condition, domain), mean) %>%
+  kable()
+```
+
+## Plot for Paper
+```{r}
+exp3_included %>%
+  paper_plot(
+    y = "michael_should",
+    x = "discipline", x_lab = "Explanation Discipline",
+    color = "condition", color_lab = "Mechanism Type",
+    ylim = c(-0.75, 1), dodge = 0.25
+  )
+```
+```{r include = FALSE}
+ggsave(
+  "figures/experiment3_discipline.png",
+  width = 5, height = 3, units = "in"
+)
+```
+
+## ANOVAs
+Main effect of mechanism type, no other significant effects or interactions. 
+```{r}
+exp3_should_lm <-
+  exp3_included %$% lm(michael_should ~ condition * discipline * prevalence)
+ANOVA(exp3_should_lm)
+```
+
+As in Experiments 1 and 2, the same effects are seen for predictive judgments.
+```{r}
+exp3_would_lm <-
+  exp3_included %$% lm(michael_would ~ condition * discipline * prevalence)
+ANOVA(exp3_would_lm)
+```
+
+### Check assumptions for ANOVAs
+```{r}
+exp3_included %$%
+  leveneTest(michael_should ~ condition * discipline * prevalence)
+exp3_included %$%
+  leveneTest(michael_would ~ condition * discipline * prevalence)
+exp3_should_lm %>% residuals() %>% shapiro.test()
+exp3_would_lm %>% residuals() %>% shapiro.test()
+```
+
+### Verify results hold without strict exclusion criteria
+Effect of mechanism type remains even including participants who answered
+one or more comprehension questions incorrectly.
+```{r}
+exp3_finishers <- exp3_data %>% drop_na()
+exp3_finishers.lm <-
+  exp3_finishers %$% lm(michael_should ~ condition * discipline * prevalence)
+ANOVA(exp3_finishers.lm)
+```
+
+## Belief Reinforcement/Undermining
+```{r}
+exp3_included %>%
+  group_by(condition) %>%
+  summarise(
+    michael_should = mean(michael_should),
+    michael_would = mean(michael_would)
+  )
+```
+
+Testing against the scale midpoint again confirms reinforcement for 
+association with normal mechanisms, no evidence of reinforcement for abnormal 
+mechanisms.
+```{r}
+exp3_included %>%
+  group_by(condition) %>%
+  do(tidy(t.test(.$michael_should))) %>% 
+  select(-c(method, alternative))
+exp3_included %>%
+  group_by(condition) %>%
+  do(tidy(t.test(.$michael_would))) %>% 
+  select(-c(method, alternative))
+```
+
+## First-Person Judgments
+Exclude participants who were neutral about explained belief in analyzing
+"you would"/"you should" data. Use the remaining 242 participants. 
+```{r}
+exp3_with_belief <-
+  exp3_included %>%
+  filter(own_belief != 0) %>%
+  mutate(
+    own_opposing = agrees_with_michael %>%
+      parse_factor(levels = c("TRUE", "FALSE")) %>%
+      recode_factor("TRUE" = "own", "FALSE" = "opposing")
+  )
+nrow(exp3_with_belief)
+exp3_with_belief %>% count(condition, discipline, agrees_with_michael)
+```
+
+### First-person distribution and means
+```{r fig.height=3}
+exp3_with_belief %>%
+  vio_dot("you_would", "condition", "agrees_with_michael", dotsize = 0.2)
+exp3_with_belief %>%
+  vio_dot("you_should", "condition", "agrees_with_michael", dotsize = 0.2)
+```
+
+When participants read an explanation for their own belief, their belief is
+is more reinforced by explanations that invoke a normal mechanism than an 
+abnormal mechanism, but when they read an explanation for the opposing belief, 
+their belief is more reinforced when the explanation invokes an _abnormal_ 
+mechanism.
+```{r}
+exp3_belief_gathered <-
+  exp3_with_belief %>% 
+  gather(you_would, you_should, key = "judgment", value = "value")
+
+exp3_with_belief %$% 
+  tapply(you_would, list(condition, own_opposing), mean) %>%
+  kable()
+exp3_with_belief %$% 
+  tapply(you_should, list(condition, own_opposing), mean) %>%
+  kable()
+```
+
+
+### First-person plot for paper
+```{r}
+exp3_with_belief %>%
+  paper_plot(
+    y = "you_would",
+    x = "own_opposing", x_lab = "Explained Belief",
+    color = "condition", color_lab = "Mechanism Type",
+    ylim = c(-0.15, 1), dodge = 0.5
+  )
+```
+```{r include = FALSE}
+ggsave("figures/experiment3_own_opp.png", width = 5, height = 3, units = "in")
+```
+
+### First-person ANOVAs
+There is a significant interaction between mechanism type and participant 
+agreement with Michael. Participants reported that explanations that appealed 
+to abnormal functioning would reinforce their own beliefs _more_ than 
+explanations that appealed to normal functioning, _as long as those
+explanations were for the opposing belief_. The pattern was reversed if they 
+read explanations for their belief. No significant main effects or other 
+significant interactions.
+```{r}
+exp3_you_would_lm <-
+  exp3_with_belief %$%
+  lm(you_would ~ condition * discipline * agrees_with_michael)
+ANOVA(exp3_you_would_lm)
+exp3_with_belief %>%
+  ggplot(
+    aes(x = agrees_with_michael, y = you_would, 
+        group = condition, color = condition)
+  ) +
+  geom_line(stat = "summary", fun.y = "mean")
+exp3_with_belief %>%
+  group_by(agrees_with_michael) %>%
+  do(tidy(t.test(.$you_would ~ .$condition))) %>% 
+  select(-c(method, alternative))
+```
+
+Again, the same effects are seen for predictive and normative judgments.
+```{r}
+exp3_you_should_lm <-
+  exp3_with_belief %$%
+  lm(you_should ~ condition * discipline * agrees_with_michael)
+ANOVA(exp3_you_should_lm)
+exp3_with_belief %>%
+  ggplot(
+    aes(x = agrees_with_michael, y = you_should, 
+        group = condition, color = condition)
+  ) +
+  geom_line(stat = "summary", fun.y = "mean")
+exp3_with_belief %>%
+  group_by(agrees_with_michael) %>%
+  do(tidy(t.test(.$you_should ~ .$condition))) %>% 
+  select(-c(method, alternative))
+```
+
+#### Check assumptions for first-person ANOVAs
+Shapiro-Wilk test is significant here too, but results are again the same 
+using a robust test, and previous visualization still doesn't suggest any 
+issues with using the mean as a summary statistic.
+```{r}
+exp3_included %$%
+  leveneTest(you_would ~ condition * discipline * agrees_with_michael)
+exp3_included %$%
+  leveneTest(you_should ~ condition * discipline * agrees_with_michael)
+exp3_you_would_lm %>% residuals() %>% shapiro.test()
+exp3_included %>%
+  mutate(agrees_fac = parse_factor(agrees_with_michael, NULL)) %$%
+  t2way(you_would ~ condition * agrees_fac)
+exp3_included %>%
+  mutate(agrees_fac = parse_factor(agrees_with_michael, NULL)) %$%
+  t2way(you_should ~ condition * agrees_fac)
+```
+
+### Confirm first-person results the same across belief domains
+Interaction between participant's belief and mechanism type is seen for 
+all belief domains. 
+```{r}
+exp3_with_belief %>%
+  group_by(condition, agrees_with_michael, domain) %>%
+  summarise(mean(you_would), mean(you_should))
+```
+
+
+
+# Experiment 4
+
+Load data.
+```{r message = FALSE}
+exp4_raw <- read_csv("data/experiment4_data.csv")
+exp4_data <-
+  exp4_raw %>%
+  select(
+    participant_id = ResponseId,
+    consent = Q1,
+    belief_in_god = Q26_18,
+    conf_in_existing = Q27_29, heard_of_existing = Q29,
+    michael_should = Q33, michael_would = Q31, 
+    plausible = Q34, realistic = Q35,
+    common_check = Q36, proper_check = Q37, agree_check = Q38,
+    done_before = Q106,
+    sex = Q81, age = Q82,
+    common = CommonUncommon, proper = ProperImproper
+  ) %>%
+  # Drop extra header rows.
+  slice(-1:-2) %>%
+  type_convert() %>%
+  # Center Likerts at 0.
+  mutate_at(
+    vars(belief_in_god, michael_should, michael_would, plausible, realistic),
+    funs(. - 4)
+  ) %>%
+  mutate(
+    theism = case_when(
+      belief_in_god > 0 ~ "theist",
+      belief_in_god < 0 ~ "atheist",
+      belief_in_god == 0 ~ "neither") %>%
+      parse_factor(levels = c("theist", "atheist", "neither")),
+    consent = consent %>%
+      recode_factor("2" = "consent", "1" = "no_consent"),
+    done_before = done_before %>%
+      recode_factor("1" = "yes", "2" = "maybe", "3" = "no"),
+    sex = sex %>%
+      recode_factor("1" = "male", "2" = "female", "3" = "other"),
+    common = common %>%
+      parse_factor(levels = c("common", "uncommon"), include_na = FALSE),
+    proper = proper %>%
+      parse_factor(levels = c("proper", "improper"), include_na = FALSE),
+    pass.common = ((common == "common" & common_check == 1)
+                   | (common == "uncommon" & common_check == 4)),
+    pass.proper = ((proper == "proper" & proper_check == 1)
+                   | (proper == "improper" & proper_check == 2)),
+    pass.agree = agree_check == 1
+  )
+```
+```{r include = FALSE}
+exp4_data %>% write_csv("data/tidy-data/experiment4_tidy.csv")
+```
+
+## Participants
+6 participants didn't complete the experiment. Another 12 participants think
+they might have done a similar study before. 189 of the rest missed at least
+1 of 3 reading comprehension questions. Analyses will focus on data from 
+the remaining 196 participants. 
+```{r include = FALSE}
+options(knitr.kable.NA = NA)
+```
+```{r results = "hold"}
+exp4_data %>%
+  filter(consent == "consent") %>%
+  count(
+    complete.cases(.),
+    done_before,
+    pass.common & pass.proper & pass.agree
+  )
+exp4_included <-
+  exp4_data %>%
+  drop_na() %>%
+  filter(done_before == "no", pass.common, pass.proper, pass.agree)
+```
+```{r include = FALSE}
+options(knitr.kable.NA = "")
+```
+
+### Demographics
+```{r}
+exp4_included %>% select(sex, age) %>% summary() %>% kable()
+```
+
+### Inclusion/exclusion by condition
+```{r}
+exp4_included %>% count(common, proper) %>% spread(proper, n)
+```
+
+## Distribution and Means
+```{r fig.height=3}
+exp4_included %>% vio_dot("michael_should", "common", "proper", dotsize = 0.25)
+exp4_included %>% vio_dot("michael_would", "common", "proper", dotsize = 0.25)
+```
+
+### Group means
+Participants report that association with a properly functioning mechanism 
+supports belief reinforcement, association with an improperly functioning one
+supports belief undermining. Whether the associated mechanism is common or
+uncommon appears to make no difference. 
+```{r}
+exp4_included %$% 
+  tapply(michael_should, list(common, proper), mean) %>%
+  kable()
+exp4_included %$% 
+  tapply(michael_would, list(common, proper), mean) %>%
+  kable()
+```
+
+## Plot for Paper
+```{r}
+exp4_included %>%
+  paper_plot(
+    y = "michael_should",
+    x = "common", x_lab = "Descriptive Normality",
+    color = "proper", color_lab = "Prescriptive Normality",
+    ylim = c(-1, 1), dodge = 0.5
+  )
+```
+```{r include = FALSE}
+ggsave("figures/experiment4.png", width = 5, height = 3, units = "in")
+```
+
+## ANOVAs
+ANOVA confirms a main effect of prescriptive normality (proper functioning), 
+no indications of an effect of statistical normality, and no interaction.
+```{r}
+exp4_should_lm <- exp4_included %$% lm(michael_should ~ common * proper)
+ANOVA(exp4_should_lm)
+```
+
+As in previous experiments, the same effects are seen for predictive judgments.
+```{r}
+exp4_would_lm <- exp4_included %$% lm(michael_would ~ common * proper)
+ANOVA(exp4_would_lm)
+```
+
+### Check assumptions for ANOVAs 
+There is variance heterogeneity for "would" judgments and Shapiro-Wilk test 
+is significant in both cases. But the results are the same using robust tests.
+```{r}
+exp4_included %$% leveneTest(michael_should ~ common * proper)
+exp4_included %$% leveneTest(michael_would ~ common * proper)
+exp4_should_lm %>% residuals() %>% shapiro.test()
+exp4_would_lm %>% residuals() %>% shapiro.test()
+exp4_included %$% t2way(michael_should ~ common * proper)
+exp4_included %$% t2way(michael_would ~ common * proper)
+```
+
+### Verify results hold without strict exclusion criteria
+With all participants who completed the experiment included, the effect of 
+prescriptive normality remains and there is still no effect of statistical 
+normality or evidence of an interaction. 
+```{r}
+exp4_finishers <- exp4_data %>% drop_na()
+ANOVA(exp4_finishers %$% lm(michael_should ~ common * proper))
+ANOVA(exp4_finishers %$% lm(michael_would ~ common * proper))
+```
+
+## Belief Reinforcement/Undermining
+```{r}
+exp4_included %>%
+  group_by(proper) %>%
+  summarise(mean(michael_should), mean(michael_would))
+```
+
+Testing against the scale midpoint confirms reinforcement for association with 
+properly functioning mechanisms, undermining for association with improperly 
+functioning mechanisms (except that people merely predict no reinforcement, 
+rather that significant undermining, when making "would" judgments). 
+```{r}
+exp4_included %>%
+  group_by(proper) %>%
+  do(tidy(t.test(.$michael_should))) %>% 
+  select(-c(method, alternative))
+exp4_included %>%
+  group_by(proper) %>%
+  do(tidy(t.test(.$michael_would))) %>% 
+  select(-c(method, alternative))
+```
+
+## Confirm Scenarios Are Plausible and Realistic
+Participants find the hypothetical explanations at least somewhat plausible 
+and realistic. 
+```{r}
+exp4_included %>% select("plausible", "realistic") %>% summary() %>% kable()
+```
+
+Explanations that appeal to improper functioning are seen as plausible. 
+Explanations that appeal to common and uncommon mechanisms were seen as 
+equally plausible. 
+```{r warning = FALSE}
+exp4_included %>%
+  ezANOVA(
+    wid = .(participant_id),
+    dv = .(plausible),
+    between = .(common, proper),
+    type = 3,
+    detailed = TRUE
+  )
+exp4_included %>%
+  ezANOVA(
+    wid = .(participant_id),
+    dv = .(realistic),
+    between = .(common, proper),
+    type = 3,
+    detailed = TRUE
+  )
+```
+
+### Confirm effects are not a consequence of differences in plausibility
+We find the same results (a main effect of proper functioning and no other
+significant effects or interactions) when including plausibility as a 
+covariate.
+```{r}
+exp4_should_plaus_lm <- exp4_included %$% 
+  lm(michael_should ~ common * proper + plausible)
+ANOVA(exp4_should_plaus_lm)
+exp4_would_plaus_lm <- exp4_included %$% aov(michael_would ~ common * proper + plausible)
+ANOVA(exp4_would_plaus_lm)
+```
+
+
+
+# Experiment 5
+
+Load data.
+```{r message = FALSE}
+exp5_raw <- read_csv("data/experiment5_data.csv")
+exp5_data <-
+  exp5_raw %>%
+  select(
+    participant_id = ResponseId,
+    consent = Q1,
+    important = Q27_1, science_class = Q27_2, theology_class = Q27_3,
+    accept = Q27_4, gov_funding = Q27_5, who_funded = Q27_6,
+    replicated = Q27_7,
+    belief_likert = Q26_18,
+    attention_check = Q13_9_TEXT, reading_check = Q19,
+    sex = Q81, age = Q82,
+    done_before = Q106,
+    explained_belief = GodAtheism, condition = NormalAbnormal,
+    presence = PossessLack
+  ) %>%
+  # Drop extra header rows.
+  slice(-1:-2) %>%
+  type_convert() %>%
+  # Center Likerts at 0.
+  mutate_at(
+    vars(important, science_class, theology_class, accept,
+         gov_funding, who_funded, replicated),
+    funs(. - 18)
+  ) %>%
+  mutate(
+    # Center another Likert at 0.
+    belief_likert = belief_likert - 4,
+    # Two items are reverse coded.
+    who_funded = who_funded * -1,
+    replicated = replicated * -1,
+    composite_trust = (
+      important + science_class + theology_class + accept
+      + gov_funding + who_funded + replicated
+    ) / 7,
+    consent = consent %>%
+      recode_factor("2" = "consent", "1" = "no_consent"),
+    done_before = done_before %>%
+      recode_factor("1" = "yes", "2" = "maybe", "3" = "no"),
+    sex = sex %>%
+      recode_factor("1" = "male", "2" = "female", "3" = "other"),
+    explained_belief = explained_belief %>%
+      recode_factor("God" = "god", "Atheism" = "atheism"),
+    condition = condition %>%
+      recode_factor("Normal" = "normal", "Abnormal" = "abnormal"),
+    presence = presence %>%
+      recode_factor("Possess" = "possess", "Lack" = "lack"),
+    theism = case_when(
+      belief_likert > 0 ~ "theist",
+      belief_likert < 0 ~ "atheist",
+      belief_likert == 0 ~ "neither"
+    ) %>%
+    parse_factor(
+      levels = c("theist", "atheist", "neither"),
+      include_na = FALSE
+    ),
+    reading_check = ifelse(is.na(reading_check), 0, reading_check),
+    attention_correct = grepl("dax", attention_check, ignore.case = TRUE)
+  )
+```
+```{r include = FALSE}
+exp5_data %>% write_csv("data/tidy-data/experiment5_tidy.csv")
+```
+
+## Participants
+44 participants didn't complete the experiment. Another 41 participants think
+they might have done a similar study before. 17 of the rest missed a catch
+question, leaving 539 participants.
+```{r include = FALSE}
+options(knitr.kable.NA = NA)
+```
+```{r results = "hold"}
+exp5_data %>%
+  # Don't count leaving attention check blank as not finishing, just as wrong.
+  select(-c(attention_check)) %>%
+  filter(consent == "consent") %>%
+  count(complete.cases(.), done_before, attention_correct)
+exp5_included <-
+  exp5_data %>%
+  drop_na() %>%
+  filter(consent == "consent", done_before == "no", attention_correct)
+```
+```{r include = FALSE}
+options(knitr.kable.NA = "")
+```
+
+### Demographics
+```{r}
+exp5_included %>% select(sex, age, theism) %>% summary() %>% kable()
+```
+
+For results to be interpretable, limited to looking at participants who were 
+not neutral on belief in God. Analyses will focus on data from the remaining 461 
+participants. 
+```{r}
+exp5_with_belief <-
+  exp5_included %>%
+  filter(theism != "neither") %>%
+  droplevels() %>%
+  mutate(
+    own_opposing = case_when(
+      explained_belief == "god" & theism == "theist" ~ "own",
+      explained_belief == "atheism" & theism == "atheist" ~ "own",
+      explained_belief == "god" & theism == "atheist" ~ "opposing",
+      explained_belief == "atheism" & theism == "theist" ~ "opposing"
+    ) %>%
+    parse_factor(levels = c("own", "opposing"))
+  )
+nrow(exp5_with_belief)
+```
+
+### Number of participants per condition (and prior belief in God)
+```{r}
+exp5_with_belief %>% count(condition, explained_belief, theism, presence)
+```
+
+## Distribution and Means
+```{r fig.height=3}
+exp5_with_belief %>%
+  vio_dot("composite_trust", "condition", "explained_belief") +
+  facet_grid(. ~ theism)
+```
+
+### Group means
+Theists overall more skeptical of any hypothetical finding. Predicted 
+interaction is seen (more skepticism for explanations of own 
+belief by appeal to abnormal mechanism, _less_ skepticism for explanations of 
+opposing belief by appeal to abnormal mechanism). Although in predicted 
+direction, effect is tiny (at best) among theists. But, that the effect 
+reverses at all is important to showing the effect is about one's own beliefs, 
+and not merely that everyone thinks abnormal mechanism explanations of atheism 
+are more dubious than abnormal mechanism explanations of theism (and vice 
+versa).
+
+```{r}
+exp5_with_belief %>%
+  group_by(theism, explained_belief, condition) %>%
+  summarise(mean(composite_trust))
+```
+
+## Plot for Paper
+```{r}
+exp5_with_belief %>%
+  ggplot(aes(x = own_opposing, y = composite_trust, color = condition)) +
+  facet_grid(
+    . ~ theism,
+    labeller = labeller(theism = c(theist = "Theists", atheist = "Atheists"))
+  ) +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(
+    stat = "summary",
+    fun.data = mean_se,
+    position = position_dodge(0.25)
+  ) +
+  geom_errorbar(
+    stat = "summary",
+    fun.data = mean_se,
+    position = position_dodge(0.25),
+    width = 0.1,
+    show.legend = FALSE
+  ) +
+  scale_color_grey(name = "Mechanism Type", labels = str_to_title) +
+  scale_x_discrete(name = "Explained Belief", labels = str_to_title) +
+  scale_y_continuous(sec.axis = sec_axis(~ .)) +
+  coord_cartesian(ylim = c(-0.75, 0.75)) +
+  labs(y = "Suggested Change in Confidence") +
+  theme_classic() +
+  theme(
+    legend.position = "top",
+    axis.line.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    strip.background = element_blank()
+  )
+```
+```{r include = FALSE}
+ggsave("figures/experiment5.png", width = 5, height = 3, units = "in")
+```
+
+## ANOVA
+There is a significant interaction between mechanism type, explained belief, 
+and participant's belief, which reflects the hypothesized result, as 
+described above. The main effect of participant's belief described above is also 
+significant. Additionally, there is a significant main effect of explained 
+belief: explanations for atheism were overall regarded more skeptically. 
+Finally, there is an unpredicted three-way interaction between mechanism type, 
+participant's belief, and presence/absence. It might indicate that atheists 
+are somewhat more skeptical of abnormal presence explanations (i.e., 
+displaying an abnormal pattern of brain activity) than they are of normal 
+presence explanations (i.e., displaying a normal pattern of brain activity), 
+but are somewhat less skeptical of abnormal absence explanations than normal 
+absence explanations.
+```{r}
+exp5_lm <-
+  exp5_with_belief %$%
+  lm(composite_trust ~ condition * explained_belief * theism * presence)
+ANOVA(exp5_lm)
+interaction.ABC.plot(
+  composite_trust, condition, explained_belief, theism,
+  data = exp5_with_belief
+)
+exp5_with_belief %>%
+  group_by(theism, explained_belief) %>%
+  do(tidy(t.test(.$composite_trust ~ .$condition))) %>% 
+  select(-c(method, alternative))
+interaction.ABC.plot(
+  composite_trust, condition, theism, presence,
+  data = exp5_with_belief
+)
+```
+
+### Check assumptions for ANOVA
+Shapiro-Wilk test is significant, but the key interaction remains using a 
+robust test.
+```{r}
+exp5_with_belief %$%
+  leveneTest(
+    composite_trust ~ condition * explained_belief * theism * presence
+  )
+exp5_lm %>% residuals() %>% shapiro.test()
+exp5_with_belief %$%
+  t3way(composite_trust ~ condition * explained_belief * theism)
+```
+
+## Scale Items 
+Reasonable reliability.
+```{r}
+exp5_included %>%
+  select(
+    important, science_class, theology_class, accept, gov_funding, who_funded,
+    replicated
+  ) %>%
+  psych::alpha(warnings = FALSE)
+```
+
+### Single item analyses
+```{r message = FALSE}
+exp5_with_belief %>%
+  group_by(condition, explained_belief, theism) %>%
+  select(
+    important, science_class, theology_class, accept, gov_funding, 
+    who_funded, replicated
+  ) %>%
+  summarise_all(mean) %>%
+  kable(
+    col.names = c(
+      "condition", "belief", "theism", "important", "sci. class", "theo. class", 
+      "accept", "gov. fund", "funder", "replicated"
+    )
+  )
+
+exp5_with_belief %$%
+  ANOVA(lm(important ~ condition * explained_belief * theism * presence))
+exp5_with_belief %$%
+  ANOVA(lm(science_class ~ condition * explained_belief * theism * presence))
+exp5_with_belief %$%
+  ANOVA(lm(theology_class ~ condition * explained_belief * theism * presence))
+exp5_with_belief %$%
+  ANOVA(lm(accept ~ condition * explained_belief * theism * presence))
+exp5_with_belief %$%
+  ANOVA(lm(gov_funding ~ condition * explained_belief * theism * presence))
+exp5_with_belief %$%
+  ANOVA(lm(who_funded ~ condition * explained_belief * theism * presence))
+exp5_with_belief %$%
+  ANOVA(lm(replicated ~ condition * explained_belief * theism * presence))
+```
+
+
+
+# Supplementary Experiment
+
+Load data.
+```{r message = FALSE}
+sup_raw <-
+  read_csv("data/supplementary_data.csv")
+sup_data <-
+  sup_raw %>%
+  select(
+    participant_id = ResponseId,
+    consent = Q1,
+    you_should = Q16, you_would = Q14,
+    michael_should = Q15, michael_would = Q100,
+    plausible = Q97, attention_check = Q13_9_TEXT, done_before = Q106,
+    sex = Q81, age = Q82,
+    valence = AcceptReject, domain = SciRelMor, prevalence = CommonRare,
+    discipline = PsychBrain, condition = NormalAbnormal,
+    own_belief = TargetRating
+  ) %>%
+  # Drop extra header rows.
+  slice(-1:-2) %>%
+  type_convert() %>%
+  # Center Likerts at 0.
+  mutate_at(
+    vars(contains("should"), contains("would"), own_belief),
+    funs(. - 4)
+  ) %>%
+  mutate(
+    consent = consent %>%
+      recode_factor("2" = "consent", "1" = "no_consent"),
+    done_before = done_before %>%
+      recode_factor("1" = "yes", "2" = "maybe", "3" = "no"),
+    sex = sex %>%
+      recode_factor("1" = "male", "2" = "female", "3" = "other"),
+    domain = domain %>%
+      recode_factor("1" = "scientific", "2" = "religious", "3" = "moral"),
+    prevalence = prevalence %>%
+      recode_factor("1" = "common", "2" = "rare"),
+    condition = condition %>%
+      recode_factor("Normal" = "neutral", "Abnormal" = "implied_abnormality"),
+    discipline = discipline %>%
+      recode_factor("Brain" = "neuroscience", "Psych" = "cognitive"),
+    valence = valence %>%
+      recode_factor("1" = "accept", "2" = "reject"),
+    pass_check = grepl("dax", attention_check, ignore.case = TRUE),
+    agrees_with_michael = ((valence == "accept" & own_belief > 0)
+                           | (valence == "reject" & own_belief < 0))
+  ) %>%
+  mutate_at(
+    vars(contains("michael_")),
+    funs(. * if_else(valence == "accept", 1, -1))
+  ) %>%
+  mutate_at(
+    vars(contains("you_")),
+    funs(. * if_else(own_belief > 0, 1, -1))
+  )
+```
+```{r include = FALSE}
+sup_data %>% write_csv("data/tidy-data/supplementary_tidy.csv")
+```
+
+## Participants
+4 participants didn't complete the experiment. Another 15 participants think
+they might have done a similar study before. 5 of the rest missed a catch
+question. Analyses will focus on data from the remaining 160 participants. 
+```{r include = FALSE}
+options(knitr.kable.NA = NA)
+```
+```{r results = "hold"}
+sup_data %>%
+  # Don't count leaving attention check blank as not finishing, just as wrong.
+  select(-attention_check) %>%
+  filter(consent == "consent") %>%
+  count(complete.cases(.), done_before == "no", pass_check)
+sup_included <-
+  sup_data %>%
+  drop_na() %>%
+  filter(consent == "consent", done_before == "no", pass_check)
+```
+```{r include = FALSE}
+options(knitr.kable.NA = "")
+```
+
+### Demographics
+```{r}
+sup_included %>% select(sex, age) %>% summary() %>% kable()
+```
+
+### Inclusion/exclusion by conditions
+```{r}
+sup_included %>% count(condition, discipline, prevalence, valence)
+```
+
+## Distribution and Means
+```{r fig.height=3}
+sup_included %>%
+  vio_dot("michael_should", "condition", "discipline") +
+  facet_grid(. ~ valence)
+sup_included %>%
+  vio_dot("michael_would", "condition", "discipline") +
+  facet_grid(. ~ valence)
+```
+
+### Group means
+Many between-subjects factors, but the effect of implied abnormality is in the 
+predicted direction across all but one (cognitive explanation for accepting 
+a common belief): association with a mechanism that is implied to be 
+functioning abnormally produces less reinforcement (more undermining). Also a 
+clear effect of valence, with more belief reinforcement suggested for 
+positive, rather than negative beliefs. 
+```{r}
+sup_included %>%
+  group_by(condition, discipline, prevalence, valence) %>% 
+  summarise(mean(michael_should), mean(michael_would))
+```
+
+Direction of the effect is consistent across belief domains as well.
+```{r}
+sup_included %>%
+  group_by(condition, domain) %>% 
+  summarise(mean(michael_should), mean(michael_would))
+```
+
+## Plot for Paper
+```{r message = FALSE}
+sup_included %>%
+  paper_plot(
+    y = "michael_should",
+    x = "valence", x_lab = "Belief Valence",
+    color = "condition", color_lab = "Mechanism Type",
+    ylim = c(-1, 1), dodge = 0.25
+  ) +
+  # Remove underscore from "implied_abnormality" condition name.
+  scale_color_grey(
+    name = "Mechanism Type",
+    labels = c(
+      neutral = "Neutral",
+      implied_abnormality = "Implied Abnormality"
+    )
+  )
+```
+```{r include = FALSE}
+ggsave("figures/supplementary.png", width = 5, height = 3, units = "in")
+```
+
+## ANOVAs
+Marginal evidence for a main effect of mechanism type (for normative/"should" 
+judgments, significant evidence for such an effect for predictive/"would" 
+judgments). The main effect of valence (with more reinforcement advised for 
+all positive beliefs) is significant. 
+```{r}
+sup_should_lm <-
+  sup_included %$%
+  lm(michael_should ~ condition * discipline * prevalence * valence)
+ANOVA(sup_should_lm)
+sup_included %$% t.test(michael_should ~ condition, alternative = "greater")
+```
+
+The same effects are seen for predictive judgments, except that there is 
+significant--rather than marginal--evidence for an effect of mechanism type.
+```{r}
+sup_would_lm <-
+  sup_included %$%
+  lm(michael_would ~ condition * discipline * prevalence * valence)
+ANOVA(sup_would_lm)
+```
+
+### Check assumptions for ANOVAs
+```{r}
+sup_included %$%
+  leveneTest(michael_would ~ condition * discipline * prevalence * valence)
+sup_included %$%
+  leveneTest(michael_should ~ condition * discipline * prevalence * valence)
+residuals(sup_should_lm) %>% shapiro.test()
+residuals(sup_would_lm) %>% shapiro.test()
+```
+
+## Belief Reinforcement/Undermining
+Looking at things separately for "accept" and "reject" conditions because of 
+the main effect of valence. In the accept condition, neutral explanations 
+support belief reinforcement, but explanations that imply an abnormal 
+mechanism do not. In the reject condition, everything shifts downward, with 
+neutral explanations near the scale midpoint and implied abnormality 
+explanations taken to support belief undermining. 
+```{r}
+sup_included %>%
+  group_by(condition, valence) %>%
+  summarise(
+    michael_should = mean(michael_should),
+    michael_would = mean(michael_would)
+  )
+```
+
+Tests against the scale midpoint confirm significant reinforcement for 
+{accept, neutral} and undermining for {reject, implied abnormality}, with 
+the other two conditions not significantly different from the scale midpoint.
+```{r}
+sup_included %>%
+  group_by(condition, valence) %>%
+  do(tidy(t.test(.$michael_should))) %>% 
+  select(-c(method, alternative))
+sup_included %>%
+  group_by(condition, valence) %>%
+  do(tidy(t.test(.$michael_would))) %>% 
+  select(-c(method, alternative))
+```
+
+## First-Person Judgments
+Exclude participants who were neutral about explained belief in analyzing 
+"you" data. Use the remaining 141 participants. 
+```{r}
+sup_with_belief <-
+  sup_included %>%
+  filter(own_belief != 0) %>%
+  mutate(
+    own_opposing = agrees_with_michael %>%
+      parse_factor(levels = c("TRUE", "FALSE")) %>%
+      fct_recode(own = "TRUE", opposing = "FALSE")
+  ) %>%
+  droplevels()
+nrow(sup_with_belief)
+sup_with_belief %>% count(condition, valence, discipline, own_opposing)
+```
+
+### First-person distribution and means
+```{r fig.height=3}
+sup_with_belief %>%
+  vio_dot("you_would", "condition", "own_opposing")
+sup_with_belief %>%
+  vio_dot("you_should", "condition", "own_opposing")
+```
+
+Explanations that appeal to neutral mechanisms are received about equally by 
+all participants. But, participants whose belief is opposite the explained 
+belief think that their own belief is _more_ reinforced by explanations for
+the target belief that imply an abnormally functioning mechanism, whereas 
+participants who share the target belief think that their belief is _less_
+reinforced (more undermined) if the explanation for it implies an abnormal 
+mechanism. (This is consistent with the first-person results from 
+Experiment 3.)
+```{r}
+sup_with_belief %$% 
+  tapply(you_would, list(condition, own_opposing), mean) %>% kable()
+sup_with_belief %$% 
+  tapply(you_should, list(condition, own_opposing), mean) %>% kable()
+```
+
+### First-person ANOVAs
+Marginal evidence of the interaction described above. Also a significant 
+interaction between explanation discipline and participants' belief, which
+appears to reflect that people also find neuroscientific explanations for 
+their own beliefs less reinforcing (regardless of implied abnormality). 
+```{r}
+sup_you_would_lm <-
+  sup_with_belief %$%
+  lm(you_would ~ condition * discipline * own_opposing * valence)
+ANOVA(sup_you_would_lm)
+sup_with_belief %>%
+  ggplot(
+    aes(x = own_opposing, y = you_would, 
+        group = condition, color = condition)
+  ) +
+  geom_line(stat = "summary", fun.y = "mean")
+sup_with_belief %>%
+  ggplot(
+    aes(x = own_opposing, y = you_would, 
+        group = discipline, color = discipline)
+  ) +
+  geom_line(stat = "summary", fun.y = "mean")
+```
+
+The same effects are seen for normative judgments. 
+```{r}
+sup_you_should_lm <-
+  sup_with_belief %$%
+  lm(you_should ~ condition * discipline * own_opposing * valence)
+ANOVA(sup_you_should_lm)
+```
+
+#### Check assumptions for first-person ANOVAs
+Mean looks to be a good measure, but effects are weaker with trimmed means.
+```{r}
+sup_with_belief %$%
+  leveneTest(you_would ~ condition * discipline * own_opposing * valence)
+sup_with_belief %$%
+  leveneTest(you_should ~ condition * discipline * own_opposing * valence)
+residuals(sup_you_would_lm) %>% shapiro.test()
+residuals(sup_you_should_lm) %>% shapiro.test()
+sup_with_belief %$%
+  t3way(you_would ~ condition * discipline * own_opposing)
+sup_with_belief %$%
+  t3way(you_would ~ condition * discipline * own_opposing)
+```
