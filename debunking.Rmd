@@ -1,6 +1,6 @@
 ---
 title: When and why people think beliefs are "debunked" by scientific explanations
-  for their origins
+  of their origins
 author:
 - Dillon Plunkett
 - Lara Buchak

@@ -1,4 +1,4 @@
-When and why people think beliefs are "debunked" by scientific explanations for their origins
+When and why people think beliefs are "debunked" by scientific explanations of their origins
 ================
 
 Dillon Plunkett, Lara Buchak, Tania Lombrozo
@@ -118,9 +118,9 @@ ANOVA with *η*<sup>2</sup>
 
 ``` r
 ANOVA <- function(lm) {
-  lm %>% 
-    Anova(type = "III") %>% 
-    tidy() %>% 
+  lm %>%
+    Anova(type = "III") %>%
+    tidy() %>%
     slice(-1) %>%  # Drop intercept.
     bind_cols(etasq(lm))
 }
@@ -260,7 +260,7 @@ exp1_included %>% vio_dot("michael_would", "condition", "prevalence")
 Reliable mechanisms are taken to support belief, as are neutral explanations (only somewhat less strongly), while unreliable mechanisms are taken to undermine belief. This is consistent across common and rare target beliefs, and also seen in predictive judgments (about what people would do). Values are overall higher for common target beliefs.
 
 ``` r
-exp1_included %$% 
+exp1_included %$%
   tapply(michael_should, list(condition, prevalence), mean) %>%
   kable()
 ```
@@ -272,7 +272,7 @@ exp1_included %$%
 | unreliable |  -0.2069|  -0.5862|
 
 ``` r
-exp1_included %$% 
+exp1_included %$%
   tapply(michael_would, list(condition, prevalence), mean) %>%
   kable()
 ```
@@ -286,7 +286,7 @@ exp1_included %$%
 Things are qualitatively the same across domains, except that people don't say unreliable mechanisms should undermine moral beliefs (mean response lower than for neutral explanations, but still slightly positive).
 
 ``` r
-exp1_included %$% 
+exp1_included %$%
   tapply(michael_should, list(condition, domain), mean) %>%
   kable()
 ```
@@ -298,7 +298,7 @@ exp1_included %$%
 | unreliable |     -0.5789|    -0.7895|  0.1500|
 
 ``` r
-exp1_included %$% 
+exp1_included %$%
   tapply(michael_would, list(condition, domain), mean) %>%
   kable()
 ```
@@ -312,7 +312,7 @@ exp1_included %$%
 The main effect of prevalence is also consistent across domains.
 
 ``` r
-exp1_included %$% 
+exp1_included %$%
   tapply(michael_should, list(prevalence, domain), mean) %>%
   kable()
 ```
@@ -323,7 +323,7 @@ exp1_included %$%
 | rare   |      0.6296|    -0.1724|  0.4667|
 
 ``` r
-exp1_included %$% 
+exp1_included %$%
   tapply(michael_would, list(prevalence, domain), mean) %>%
   kable()
 ```
@@ -369,15 +369,15 @@ ANOVA(exp1_should_lm)
 exp1_included %$% pairwise.t.test(michael_should, condition, "holm")
 ```
 
-    ## 
-    ##  Pairwise comparisons using t tests with pooled SD 
-    ## 
-    ## data:  michael_should and condition 
-    ## 
+    ##
+    ##  Pairwise comparisons using t tests with pooled SD
+    ##
+    ## data:  michael_should and condition
+    ##
     ##            reliable neutral
-    ## neutral    0.04     -      
-    ## unreliable 2e-10    4e-06  
-    ## 
+    ## neutral    0.04     -
+    ## unreliable 2e-10    4e-06
+    ##
     ## P value adjustment method: holm
 
 An analogous ANOVA analyzing the predictive judgments (about what the subject of the vignette *would* do, as opposed to what he *should* do) finds the same effects.
@@ -398,15 +398,15 @@ ANOVA(exp1_would_lm)
 exp1_included %$% pairwise.t.test(michael_would, condition, "holm")
 ```
 
-    ## 
-    ##  Pairwise comparisons using t tests with pooled SD 
-    ## 
-    ## data:  michael_would and condition 
-    ## 
+    ##
+    ##  Pairwise comparisons using t tests with pooled SD
+    ##
+    ## data:  michael_would and condition
+    ##
     ##            reliable neutral
-    ## neutral    9e-04    -      
-    ## unreliable <2e-16   8e-12  
-    ## 
+    ## neutral    9e-04    -
+    ## unreliable <2e-16   8e-12
+    ##
     ## P value adjustment method: holm
 
 ### Check assumptions for ANOVAs
@@ -435,9 +435,9 @@ exp1_included %$% leveneTest(michael_would ~ condition * prevalence)
 exp1_should_lm %>% residuals() %>% shapiro.test()
 ```
 
-    ## 
+    ##
     ##  Shapiro-Wilk normality test
-    ## 
+    ##
     ## data:  .
     ## W = 0.98, p-value = 0.02
 
@@ -445,9 +445,9 @@ exp1_should_lm %>% residuals() %>% shapiro.test()
 exp1_would_lm %>% residuals() %>% shapiro.test()
 ```
 
-    ## 
+    ##
     ##  Shapiro-Wilk normality test
-    ## 
+    ##
     ## data:  .
     ## W = 0.98, p-value = 0.005
 
@@ -457,7 +457,7 @@ exp1_included %$% t2way(michael_should ~ condition * prevalence)
 
     ## Call:
     ## t2way(formula = michael_should ~ condition * prevalence)
-    ## 
+    ##
     ##                       value p.value
     ## condition            45.685   0.001
     ## prevalence            4.368   0.040
@@ -469,7 +469,7 @@ exp1_included %$% t2way(michael_would ~ condition * prevalence)
 
     ## Call:
     ## t2way(formula = michael_would ~ condition * prevalence)
-    ## 
+    ##
     ##                        value p.value
     ## condition            111.956   0.001
     ## prevalence             5.356   0.024
@@ -498,7 +498,7 @@ Tests against the scale midpoint confirm reinforcement for reliable and neutral 
 ``` r
 exp1_included %>%
   group_by(condition) %>%
-  do(tidy(t.test(.$michael_should))) %>% 
+  do(tidy(t.test(.$michael_should))) %>%
   select(-c(method, alternative))
 ```
 
@@ -511,7 +511,7 @@ exp1_included %>%
 ``` r
 exp1_included %>%
   group_by(condition) %>%
-  do(tidy(t.test(.$michael_would))) %>% 
+  do(tidy(t.test(.$michael_would))) %>%
   select(-c(method, alternative))
 ```
 
@@ -540,16 +540,16 @@ exp1_included %>%
 exp1_included %$% t.test(common_avg, rare_avg, paired = TRUE)
 ```
 
-    ## 
+    ##
     ##  Paired t-test
-    ## 
+    ##
     ## data:  common_avg and rare_avg
     ## t = 30, df = 170, p-value <2e-16
     ## alternative hypothesis: true difference in means is not equal to 0
     ## 95 percent confidence interval:
     ##  35.34 40.35
     ## sample estimates:
-    ## mean of the differences 
+    ## mean of the differences
     ##                   37.85
 
 Experiment 2
@@ -668,7 +668,7 @@ exp2_included %>% vio_dot("michael_would", "condition", "prevalence")
 Association with a normal mechanism, but not an abnormal mechanism, seems to be taken as support for a belief. This is consistent across common and rare beliefs. No evidence of a main effect of belief prevalence in this sample.
 
 ``` r
-exp2_included %$% 
+exp2_included %$%
   tapply(michael_should, list(condition, prevalence), mean) %>%
   kable()
 ```
@@ -679,7 +679,7 @@ exp2_included %$%
 | abnormal |  -0.1429|  0.0417|
 
 ``` r
-exp2_included %$% 
+exp2_included %$%
   tapply(michael_would, list(condition, prevalence), mean) %>%
   kable()
 ```
@@ -692,7 +692,7 @@ exp2_included %$%
 The same qualitative pattern is seen across belief domains.
 
 ``` r
-exp2_included %$% 
+exp2_included %$%
   tapply(michael_should, list(condition, domain), mean) %>%
   kable()
 ```
@@ -703,7 +703,7 @@ exp2_included %$%
 | abnormal |      0.0000|    -0.3500|  0.2353|
 
 ``` r
-exp2_included %$% 
+exp2_included %$%
   tapply(michael_would, list(condition, domain), mean) %>%
   kable()
 ```
@@ -786,9 +786,9 @@ exp2_included %$% leveneTest(michael_would ~ condition * prevalence)
 exp2_should_lm %>% residuals() %>% shapiro.test()
 ```
 
-    ## 
+    ##
     ##  Shapiro-Wilk normality test
-    ## 
+    ##
     ## data:  .
     ## W = 0.94, p-value = 2e-04
 
@@ -798,7 +798,7 @@ exp2_included %$% t2way(michael_should ~ condition * prevalence)
 
     ## Call:
     ## t2way(formula = michael_should ~ condition * prevalence)
-    ## 
+    ##
     ##                       value p.value
     ## condition            6.8535   0.012
     ## prevalence           0.0056   0.941
@@ -810,7 +810,7 @@ exp2_included %$% t2way(michael_would ~ condition * prevalence)
 
     ## Call:
     ## t2way(formula = michael_would ~ condition * prevalence)
-    ## 
+    ##
     ##                       value p.value
     ## condition            8.7226   0.005
     ## prevalence           0.5009   0.482
@@ -838,7 +838,7 @@ Testing against the scale midpoint confirms reinforcement for association with n
 ``` r
 exp2_included %>%
   group_by(condition) %>%
-  do(tidy(t.test(.$michael_should))) %>% 
+  do(tidy(t.test(.$michael_should))) %>%
   select(-c(method, alternative))
 ```
 
@@ -850,7 +850,7 @@ exp2_included %>%
 ``` r
 exp2_included %>%
   group_by(condition) %>%
-  do(tidy(t.test(.$michael_would))) %>% 
+  do(tidy(t.test(.$michael_would))) %>%
   select(-c(method, alternative))
 ```
 
@@ -1047,7 +1047,7 @@ exp3_included %>%
 Association with a normal mechanism is still consistently taken to support belief reinforcement, whereas association with an abnormal mechanism is not. Only exception is the cognitive explanation (and only absent there for the normative judgment, not the predictive one).
 
 ``` r
-exp3_included %$% 
+exp3_included %$%
   tapply(michael_should, list(condition, discipline), mean) %>%
   kable()
 ```
@@ -1058,7 +1058,7 @@ exp3_included %$%
 | abnormal |       -0.4595|   0.1538|        -0.0968|        -0.1562|
 
 ``` r
-exp3_included %$% 
+exp3_included %$%
   tapply(michael_would, list(condition, discipline), mean) %>%
   kable()
 ```
@@ -1071,7 +1071,7 @@ exp3_included %$%
 Effect of normality is again qualitatively the same across domains.
 
 ``` r
-exp3_included %$% 
+exp3_included %$%
   tapply(michael_should, list(condition, domain), mean) %>%
   kable()
 ```
@@ -1082,7 +1082,7 @@ exp3_included %$%
 | abnormal |     -0.2857|    -0.0638|  -0.1818|
 
 ``` r
-exp3_included %$% 
+exp3_included %$%
   tapply(michael_would, list(condition, domain), mean) %>%
   kable()
 ```
@@ -1174,9 +1174,9 @@ exp3_included %$%
 exp3_should_lm %>% residuals() %>% shapiro.test()
 ```
 
-    ## 
+    ##
     ##  Shapiro-Wilk normality test
-    ## 
+    ##
     ## data:  .
     ## W = 0.99, p-value = 0.07
 
@@ -1184,9 +1184,9 @@ exp3_should_lm %>% residuals() %>% shapiro.test()
 exp3_would_lm %>% residuals() %>% shapiro.test()
 ```
 
-    ## 
+    ##
     ##  Shapiro-Wilk normality test
-    ## 
+    ##
     ## data:  .
     ## W = 0.99, p-value = 0.1
 
@@ -1234,7 +1234,7 @@ Testing against the scale midpoint again confirms reinforcement for association 
 ``` r
 exp3_included %>%
   group_by(condition) %>%
-  do(tidy(t.test(.$michael_should))) %>% 
+  do(tidy(t.test(.$michael_should))) %>%
   select(-c(method, alternative))
 ```
 
@@ -1246,7 +1246,7 @@ exp3_included %>%
 ``` r
 exp3_included %>%
   group_by(condition) %>%
-  do(tidy(t.test(.$michael_would))) %>% 
+  do(tidy(t.test(.$michael_would))) %>%
   select(-c(method, alternative))
 ```
 
@@ -1317,10 +1317,10 @@ When participants read an explanation for their own belief, their belief is is m
 
 ``` r
 exp3_belief_gathered <-
-  exp3_with_belief %>% 
+  exp3_with_belief %>%
   gather(you_would, you_should, key = "judgment", value = "value")
 
-exp3_with_belief %$% 
+exp3_with_belief %$%
   tapply(you_would, list(condition, own_opposing), mean) %>%
   kable()
 ```
@@ -1331,7 +1331,7 @@ exp3_with_belief %$%
 | abnormal |  0.0161|    0.8000|
 
 ``` r
-exp3_with_belief %$% 
+exp3_with_belief %$%
   tapply(you_should, list(condition, own_opposing), mean) %>%
   kable()
 ```
@@ -1380,7 +1380,7 @@ ANOVA(exp3_you_would_lm)
 ``` r
 exp3_with_belief %>%
   ggplot(
-    aes(x = agrees_with_michael, y = you_would, 
+    aes(x = agrees_with_michael, y = you_would,
         group = condition, color = condition)
   ) +
   geom_line(stat = "summary", fun.y = "mean")
@@ -1391,7 +1391,7 @@ exp3_with_belief %>%
 ``` r
 exp3_with_belief %>%
   group_by(agrees_with_michael) %>%
-  do(tidy(t.test(.$you_would ~ .$condition))) %>% 
+  do(tidy(t.test(.$you_would ~ .$condition))) %>%
   select(-c(method, alternative))
 ```
 
@@ -1423,7 +1423,7 @@ ANOVA(exp3_you_should_lm)
 ``` r
 exp3_with_belief %>%
   ggplot(
-    aes(x = agrees_with_michael, y = you_should, 
+    aes(x = agrees_with_michael, y = you_should,
         group = condition, color = condition)
   ) +
   geom_line(stat = "summary", fun.y = "mean")
@@ -1434,7 +1434,7 @@ exp3_with_belief %>%
 ``` r
 exp3_with_belief %>%
   group_by(agrees_with_michael) %>%
-  do(tidy(t.test(.$you_should ~ .$condition))) %>% 
+  do(tidy(t.test(.$you_should ~ .$condition))) %>%
   select(-c(method, alternative))
 ```
 
@@ -1471,9 +1471,9 @@ exp3_included %$%
 exp3_you_would_lm %>% residuals() %>% shapiro.test()
 ```
 
-    ## 
+    ##
     ##  Shapiro-Wilk normality test
-    ## 
+    ##
     ## data:  .
     ## W = 0.96, p-value = 4e-06
 
@@ -1485,7 +1485,7 @@ exp3_included %>%
 
     ## Call:
     ## t2way(formula = you_would ~ condition * agrees_fac)
-    ## 
+    ##
     ##                        value p.value
     ## condition             0.0007   0.979
     ## agrees_fac            1.8870   0.172
@@ -1499,7 +1499,7 @@ exp3_included %>%
 
     ## Call:
     ## t2way(formula = you_should ~ condition * agrees_fac)
-    ## 
+    ##
     ##                       value p.value
     ## condition            0.1291   0.720
     ## agrees_fac           0.4057   0.526
@@ -1544,7 +1544,7 @@ exp4_data <-
     consent = Q1,
     belief_in_god = Q26_18,
     conf_in_existing = Q27_29, heard_of_existing = Q29,
-    michael_should = Q33, michael_would = Q31, 
+    michael_should = Q33, michael_would = Q31,
     plausible = Q34, realistic = Q35,
     common_check = Q36, proper_check = Q37, agree_check = Q38,
     done_before = Q106,
@@ -1661,7 +1661,7 @@ exp4_included %>% vio_dot("michael_would", "common", "proper", dotsize = 0.25)
 Participants report that association with a properly functioning mechanism supports belief reinforcement, association with an improperly functioning one supports belief undermining. Whether the associated mechanism is common or uncommon appears to make no difference.
 
 ``` r
-exp4_included %$% 
+exp4_included %$%
   tapply(michael_should, list(common, proper), mean) %>%
   kable()
 ```
@@ -1672,7 +1672,7 @@ exp4_included %$%
 | uncommon |  0.3571|   -0.2857|
 
 ``` r
-exp4_included %$% 
+exp4_included %$%
   tapply(michael_would, list(common, proper), mean) %>%
   kable()
 ```
@@ -1754,9 +1754,9 @@ exp4_included %$% leveneTest(michael_would ~ common * proper)
 exp4_should_lm %>% residuals() %>% shapiro.test()
 ```
 
-    ## 
+    ##
     ##  Shapiro-Wilk normality test
-    ## 
+    ##
     ## data:  .
     ## W = 0.95, p-value = 3e-06
 
@@ -1764,9 +1764,9 @@ exp4_should_lm %>% residuals() %>% shapiro.test()
 exp4_would_lm %>% residuals() %>% shapiro.test()
 ```
 
-    ## 
+    ##
     ##  Shapiro-Wilk normality test
-    ## 
+    ##
     ## data:  .
     ## W = 0.94, p-value = 5e-07
 
@@ -1776,7 +1776,7 @@ exp4_included %$% t2way(michael_should ~ common * proper)
 
     ## Call:
     ## t2way(formula = michael_should ~ common * proper)
-    ## 
+    ##
     ##                 value p.value
     ## common         0.4124   0.523
     ## proper        15.0737   0.001
@@ -1788,7 +1788,7 @@ exp4_included %$% t2way(michael_would ~ common * proper)
 
     ## Call:
     ## t2way(formula = michael_would ~ common * proper)
-    ## 
+    ##
     ##                 value p.value
     ## common         0.2100   0.648
     ## proper        25.7131   0.001
@@ -1840,7 +1840,7 @@ Testing against the scale midpoint confirms reinforcement for association with p
 ``` r
 exp4_included %>%
   group_by(proper) %>%
-  do(tidy(t.test(.$michael_should))) %>% 
+  do(tidy(t.test(.$michael_should))) %>%
   select(-c(method, alternative))
 ```
 
@@ -1852,7 +1852,7 @@ exp4_included %>%
 ``` r
 exp4_included %>%
   group_by(proper) %>%
-  do(tidy(t.test(.$michael_would))) %>% 
+  do(tidy(t.test(.$michael_would))) %>%
   select(-c(method, alternative))
 ```
 
@@ -1900,7 +1900,7 @@ exp4_included %>%
     ## 2        common   1 192  0.03104 488.2 0.01221 0.91214       6.357e-05
     ## 3        proper   1 192 15.08121 488.2 5.93172 0.01578     * 2.997e-02
     ## 4 common:proper   1 192  0.60199 488.2 0.23677 0.62710       1.232e-03
-    ## 
+    ##
     ## $`Levene's Test for Homogeneity of Variance`
     ##   DFn DFd   SSn   SSd     F      p p<.05
     ## 1   3 192 4.406 189.2 1.491 0.2184
@@ -1924,7 +1924,7 @@ exp4_included %>%
     ## 2        common   1 192  0.1829 523.1  0.06714 7.958e-01       0.0003496
     ## 3        proper   1 192  4.2369 523.1  1.55520 2.139e-01       0.0080349
     ## 4 common:proper   1 192  0.1788 523.1  0.06562 7.981e-01       0.0003416
-    ## 
+    ##
     ## $`Levene's Test for Homogeneity of Variance`
     ##   DFn DFd   SSn   SSd      F      p p<.05
     ## 1   3 192 1.029 227.4 0.2897 0.8328
@@ -1934,7 +1934,7 @@ exp4_included %>%
 We find the same results (a main effect of proper functioning and no other significant effects or interactions) when including plausibility as a covariate.
 
 ``` r
-exp4_should_plaus_lm <- exp4_included %$% 
+exp4_should_plaus_lm <- exp4_included %$%
   lm(michael_should ~ common * proper + plausible)
 ANOVA(exp4_should_plaus_lm)
 ```
@@ -2231,7 +2231,7 @@ interaction.ABC.plot(
 ``` r
 exp5_with_belief %>%
   group_by(theism, explained_belief) %>%
-  do(tidy(t.test(.$composite_trust ~ .$condition))) %>% 
+  do(tidy(t.test(.$composite_trust ~ .$condition))) %>%
   select(-c(method, alternative))
 ```
 
@@ -2271,9 +2271,9 @@ exp5_with_belief %$%
 exp5_lm %>% residuals() %>% shapiro.test()
 ```
 
-    ## 
+    ##
     ##  Shapiro-Wilk normality test
-    ## 
+    ##
     ## data:  .
     ## W = 0.98, p-value = 4e-05
 
@@ -2283,9 +2283,9 @@ exp5_with_belief %$%
 ```
 
     ## Call:
-    ## t3way(formula = composite_trust ~ condition * explained_belief * 
+    ## t3way(formula = composite_trust ~ condition * explained_belief *
     ##     theism)
-    ## 
+    ##
     ##                                     value p.value
     ## condition                          0.2867   0.600
     ## explained_belief                   4.0328   0.046
@@ -2309,16 +2309,16 @@ exp5_included %>%
   psych::alpha(warnings = FALSE)
 ```
 
-    ## 
-    ## Reliability analysis   
+    ##
+    ## Reliability analysis
     ## Call: psych::alpha(x = ., warnings = FALSE)
-    ## 
+    ##
     ##   raw_alpha std.alpha G6(smc) average_r S/N   ase  mean   sd median_r
     ##       0.69      0.65    0.74      0.21 1.9 0.019 -0.33 0.94     0.37
-    ## 
+    ##
     ##  lower alpha upper     95% confidence boundaries
-    ## 0.66 0.69 0.73 
-    ## 
+    ## 0.66 0.69 0.73
+    ##
     ##  Reliability if an item is dropped:
     ##                raw_alpha std.alpha G6(smc) average_r S/N alpha se var.r
     ## important           0.65      0.61    0.70      0.21 1.6    0.022 0.104
@@ -2336,8 +2336,8 @@ exp5_included %>%
     ## gov_funding     0.078
     ## who_funded      0.420
     ## replicated      0.420
-    ## 
-    ##  Item statistics 
+    ##
+    ##  Item statistics
     ##                  n raw.r std.r  r.cor r.drop   mean  sd
     ## important      539 0.620  0.58  0.491   0.43  0.852 1.6
     ## science_class  539 0.788  0.75  0.756   0.65  0.258 1.7
@@ -2346,7 +2346,7 @@ exp5_included %>%
     ## gov_funding    539 0.716  0.68  0.607   0.53 -0.063 1.8
     ## who_funded     539 0.243  0.32  0.153   0.03 -1.677 1.4
     ## replicated     539 0.067  0.17 -0.019  -0.11 -2.087 1.1
-    ## 
+    ##
     ## Non missing response frequency for each item
     ##                  -3   -2   -1    0    1    2    3 miss
     ## important      0.04 0.06 0.08 0.15 0.26 0.25 0.15    0
@@ -2363,13 +2363,13 @@ exp5_included %>%
 exp5_with_belief %>%
   group_by(condition, explained_belief, theism) %>%
   select(
-    important, science_class, theology_class, accept, gov_funding, 
+    important, science_class, theology_class, accept, gov_funding,
     who_funded, replicated
   ) %>%
   summarise_all(mean) %>%
   kable(
     col.names = c(
-      "condition", "belief", "theism", "important", "sci. class", "theo. class", 
+      "condition", "belief", "theism", "important", "sci. class", "theo. class",
       "accept", "gov. fund", "funder", "replicated"
     )
   )
@@ -2704,7 +2704,7 @@ Many between-subjects factors, but the effect of implied abnormality is in the p
 
 ``` r
 sup_included %>%
-  group_by(condition, discipline, prevalence, valence) %>% 
+  group_by(condition, discipline, prevalence, valence) %>%
   summarise(mean(michael_should), mean(michael_would))
 ```
 
@@ -2731,7 +2731,7 @@ Direction of the effect is consistent across belief domains as well.
 
 ``` r
 sup_included %>%
-  group_by(condition, domain) %>% 
+  group_by(condition, domain) %>%
   summarise(mean(michael_should), mean(michael_would))
 ```
 
@@ -2802,16 +2802,16 @@ ANOVA(sup_should_lm)
 sup_included %$% t.test(michael_should ~ condition, alternative = "greater")
 ```
 
-    ## 
+    ##
     ##  Welch Two Sample t-test
-    ## 
+    ##
     ## data:  michael_should by condition
     ## t = 2, df = 150, p-value = 0.02
     ## alternative hypothesis: true difference in means is greater than 0
     ## 95 percent confidence interval:
     ##  0.08595     Inf
     ## sample estimates:
-    ##             mean in group neutral mean in group implied_abnormality 
+    ##             mean in group neutral mean in group implied_abnormality
     ##                            0.2105                           -0.2738
 
 The same effects are seen for predictive judgments, except that there is significant--rather than marginal--evidence for an effect of mechanism type.
@@ -2868,9 +2868,9 @@ sup_included %$%
 residuals(sup_should_lm) %>% shapiro.test()
 ```
 
-    ## 
+    ##
     ##  Shapiro-Wilk normality test
-    ## 
+    ##
     ## data:  .
     ## W = 1, p-value = 0.9
 
@@ -2878,9 +2878,9 @@ residuals(sup_should_lm) %>% shapiro.test()
 residuals(sup_would_lm) %>% shapiro.test()
 ```
 
-    ## 
+    ##
     ##  Shapiro-Wilk normality test
-    ## 
+    ##
     ## data:  .
     ## W = 0.99, p-value = 0.3
 
@@ -2910,7 +2910,7 @@ Tests against the scale midpoint confirm significant reinforcement for {accept, 
 ``` r
 sup_included %>%
   group_by(condition, valence) %>%
-  do(tidy(t.test(.$michael_should))) %>% 
+  do(tidy(t.test(.$michael_should))) %>%
   select(-c(method, alternative))
 ```
 
@@ -2924,7 +2924,7 @@ sup_included %>%
 ``` r
 sup_included %>%
   group_by(condition, valence) %>%
-  do(tidy(t.test(.$michael_would))) %>% 
+  do(tidy(t.test(.$michael_would))) %>%
   select(-c(method, alternative))
 ```
 
@@ -2997,7 +2997,7 @@ sup_with_belief %>%
 Explanations that appeal to neutral mechanisms are received about equally by all participants. But, participants whose belief is opposite the explained belief think that their own belief is *more* reinforced by explanations for the target belief that imply an abnormally functioning mechanism, whereas participants who share the target belief think that their belief is *less* reinforced (more undermined) if the explanation for it implies an abnormal mechanism. (This is consistent with the first-person results from Experiment 3.)
 
 ``` r
-sup_with_belief %$% 
+sup_with_belief %$%
   tapply(you_would, list(condition, own_opposing), mean) %>% kable()
 ```
 
@@ -3007,7 +3007,7 @@ sup_with_belief %$%
 | implied\_abnormality |  0.2439|    0.8824|
 
 ``` r
-sup_with_belief %$% 
+sup_with_belief %$%
   tapply(you_should, list(condition, own_opposing), mean) %>% kable()
 ```
 
@@ -3049,7 +3049,7 @@ ANOVA(sup_you_would_lm)
 ``` r
 sup_with_belief %>%
   ggplot(
-    aes(x = own_opposing, y = you_would, 
+    aes(x = own_opposing, y = you_would,
         group = condition, color = condition)
   ) +
   geom_line(stat = "summary", fun.y = "mean")
@@ -3060,7 +3060,7 @@ sup_with_belief %>%
 ``` r
 sup_with_belief %>%
   ggplot(
-    aes(x = own_opposing, y = you_would, 
+    aes(x = own_opposing, y = you_would,
         group = discipline, color = discipline)
   ) +
   geom_line(stat = "summary", fun.y = "mean")
@@ -3124,9 +3124,9 @@ sup_with_belief %$%
 residuals(sup_you_would_lm) %>% shapiro.test()
 ```
 
-    ## 
+    ##
     ##  Shapiro-Wilk normality test
-    ## 
+    ##
     ## data:  .
     ## W = 0.97, p-value = 0.003
 
@@ -3134,9 +3134,9 @@ residuals(sup_you_would_lm) %>% shapiro.test()
 residuals(sup_you_should_lm) %>% shapiro.test()
 ```
 
-    ## 
+    ##
     ##  Shapiro-Wilk normality test
-    ## 
+    ##
     ## data:  .
     ## W = 0.97, p-value = 0.01
 
@@ -3147,7 +3147,7 @@ sup_with_belief %$%
 
     ## Call:
     ## t3way(formula = you_would ~ condition * discipline * own_opposing)
-    ## 
+    ##
     ##                                    value p.value
     ## condition                         0.2944   0.590
     ## discipline                        1.0868   0.310
@@ -3164,7 +3164,7 @@ sup_with_belief %$%
 
     ## Call:
     ## t3way(formula = you_would ~ condition * discipline * own_opposing)
-    ## 
+    ##
     ##                                    value p.value
     ## condition                         0.2944   0.590
     ## discipline                        1.0868   0.310

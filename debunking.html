@@ -25,7 +25,7 @@ body {
 
 <body>
 
-<h1 id="when-and-why-people-think-beliefs-are-debunked-by-scientific-explanations-for-their-origins">When and why people think beliefs are &quot;debunked&quot; by scientific explanations for their origins</h1>
+<h1 id="when-and-why-people-think-beliefs-are-debunked-by-scientific-explanations-for-their-origins">When and why people think beliefs are &quot;debunked&quot; by scientific explanations of their origins</h1>
 <p>Dillon Plunkett, Lara Buchak, Tania Lombrozo</p>
 <p>September 21, 2018</p>
 <ul>
@@ -595,15 +595,15 @@ exp1_included &lt;-
 </tbody>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp1_included <span class="op">%$%</span><span class="st"> </span><span class="kw">pairwise.t.test</span>(michael_should, condition, <span class="st">&quot;holm&quot;</span>)</code></pre></div>
-<pre><code>## 
-##  Pairwise comparisons using t tests with pooled SD 
-## 
-## data:  michael_should and condition 
-## 
+<pre><code>##
+##  Pairwise comparisons using t tests with pooled SD
+##
+## data:  michael_should and condition
+##
 ##            reliable neutral
-## neutral    0.04     -      
-## unreliable 2e-10    4e-06  
-## 
+## neutral    0.04     -
+## unreliable 2e-10    4e-06
+##
 ## P value adjustment method: holm</code></pre>
 <p>An analogous ANOVA analyzing the predictive judgments (about what the subject of the vignette <em>would</em> do, as opposed to what he <em>should</em> do) finds the same effects.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp1_would_lm &lt;-<span class="st"> </span>exp1_included <span class="op">%$%</span><span class="st"> </span><span class="kw">lm</span>(michael_would <span class="op">~</span><span class="st"> </span>condition <span class="op">*</span><span class="st"> </span>prevalence)
@@ -655,15 +655,15 @@ exp1_included &lt;-
 </tbody>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp1_included <span class="op">%$%</span><span class="st"> </span><span class="kw">pairwise.t.test</span>(michael_would, condition, <span class="st">&quot;holm&quot;</span>)</code></pre></div>
-<pre><code>## 
-##  Pairwise comparisons using t tests with pooled SD 
-## 
-## data:  michael_would and condition 
-## 
+<pre><code>##
+##  Pairwise comparisons using t tests with pooled SD
+##
+## data:  michael_would and condition
+##
 ##            reliable neutral
-## neutral    9e-04    -      
-## unreliable &lt;2e-16   8e-12  
-## 
+## neutral    9e-04    -
+## unreliable &lt;2e-16   8e-12
+##
 ## P value adjustment method: holm</code></pre>
 <h3 id="check-assumptions-for-anovas">Check assumptions for ANOVAs</h3>
 <p>Shapiro-Wilk test is significant, but the results are the same using a robust test, and previous visualization didn't suggest any issues with using the mean as a summary statistic.</p>
@@ -718,21 +718,21 @@ exp1_included &lt;-
 </tbody>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp1_should_lm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">residuals</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">shapiro.test</span>()</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Shapiro-Wilk normality test
-## 
+##
 ## data:  .
 ## W = 0.98, p-value = 0.02</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp1_would_lm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">residuals</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">shapiro.test</span>()</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Shapiro-Wilk normality test
-## 
+##
 ## data:  .
 ## W = 0.98, p-value = 0.005</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp1_included <span class="op">%$%</span><span class="st"> </span><span class="kw">t2way</span>(michael_should <span class="op">~</span><span class="st"> </span>condition <span class="op">*</span><span class="st"> </span>prevalence)</code></pre></div>
 <pre><code>## Call:
 ## t2way(formula = michael_should ~ condition * prevalence)
-## 
+##
 ##                       value p.value
 ## condition            45.685   0.001
 ## prevalence            4.368   0.040
@@ -740,7 +740,7 @@ exp1_included &lt;-
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp1_included <span class="op">%$%</span><span class="st"> </span><span class="kw">t2way</span>(michael_would <span class="op">~</span><span class="st"> </span>condition <span class="op">*</span><span class="st"> </span>prevalence)</code></pre></div>
 <pre><code>## Call:
 ## t2way(formula = michael_would ~ condition * prevalence)
-## 
+##
 ##                        value p.value
 ## condition            111.956   0.001
 ## prevalence             5.356   0.024
@@ -899,16 +899,16 @@ exp1_included &lt;-
 </tbody>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp1_included <span class="op">%$%</span><span class="st"> </span><span class="kw">t.test</span>(common_avg, rare_avg, <span class="dt">paired =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Paired t-test
-## 
+##
 ## data:  common_avg and rare_avg
 ## t = 30, df = 170, p-value &lt;2e-16
 ## alternative hypothesis: true difference in means is not equal to 0
 ## 95 percent confidence interval:
 ##  35.34 40.35
 ## sample estimates:
-## mean of the differences 
+## mean of the differences
 ##                   37.85</code></pre>
 <h1 id="experiment-2">Experiment 2</h1>
 <p>Load data.</p>
@@ -1345,15 +1345,15 @@ exp2_included &lt;-
 </tbody>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp2_should_lm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">residuals</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">shapiro.test</span>()</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Shapiro-Wilk normality test
-## 
+##
 ## data:  .
 ## W = 0.94, p-value = 2e-04</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp2_included <span class="op">%$%</span><span class="st"> </span><span class="kw">t2way</span>(michael_should <span class="op">~</span><span class="st"> </span>condition <span class="op">*</span><span class="st"> </span>prevalence)</code></pre></div>
 <pre><code>## Call:
 ## t2way(formula = michael_should ~ condition * prevalence)
-## 
+##
 ##                       value p.value
 ## condition            6.8535   0.012
 ## prevalence           0.0056   0.941
@@ -1361,7 +1361,7 @@ exp2_included &lt;-
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp2_included <span class="op">%$%</span><span class="st"> </span><span class="kw">t2way</span>(michael_would <span class="op">~</span><span class="st"> </span>condition <span class="op">*</span><span class="st"> </span>prevalence)</code></pre></div>
 <pre><code>## Call:
 ## t2way(formula = michael_would ~ condition * prevalence)
-## 
+##
 ##                       value p.value
 ## condition            8.7226   0.005
 ## prevalence           0.5009   0.482
@@ -2128,15 +2128,15 @@ exp3_consented <span class="op">%&gt;%</span><span class="st"> </span><span clas
 </tbody>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp3_should_lm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">residuals</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">shapiro.test</span>()</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Shapiro-Wilk normality test
-## 
+##
 ## data:  .
 ## W = 0.99, p-value = 0.07</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp3_would_lm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">residuals</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">shapiro.test</span>()</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Shapiro-Wilk normality test
-## 
+##
 ## data:  .
 ## W = 0.99, p-value = 0.1</code></pre>
 <h3 id="verify-results-hold-without-strict-exclusion-criteria">Verify results hold without strict exclusion criteria</h3>
@@ -2602,7 +2602,7 @@ exp3_with_belief <span class="op">%$%</span><span class="st"> </span>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp3_with_belief <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ggplot</span>(
-    <span class="kw">aes</span>(<span class="dt">x =</span> agrees_with_michael, <span class="dt">y =</span> you_would, 
+    <span class="kw">aes</span>(<span class="dt">x =</span> agrees_with_michael, <span class="dt">y =</span> you_would,
         <span class="dt">group =</span> condition, <span class="dt">color =</span> condition)
   ) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">stat =</span> <span class="st">&quot;summary&quot;</span>, <span class="dt">fun.y =</span> <span class="st">&quot;mean&quot;</span>)</code></pre></div>
@@ -2746,7 +2746,7 @@ exp3_with_belief <span class="op">%$%</span><span class="st"> </span>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp3_with_belief <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ggplot</span>(
-    <span class="kw">aes</span>(<span class="dt">x =</span> agrees_with_michael, <span class="dt">y =</span> you_should, 
+    <span class="kw">aes</span>(<span class="dt">x =</span> agrees_with_michael, <span class="dt">y =</span> you_should,
         <span class="dt">group =</span> condition, <span class="dt">color =</span> condition)
   ) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">stat =</span> <span class="st">&quot;summary&quot;</span>, <span class="dt">fun.y =</span> <span class="st">&quot;mean&quot;</span>)</code></pre></div>
@@ -2860,9 +2860,9 @@ exp3_with_belief <span class="op">%$%</span><span class="st"> </span>
 </tbody>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp3_you_would_lm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">residuals</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">shapiro.test</span>()</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Shapiro-Wilk normality test
-## 
+##
 ## data:  .
 ## W = 0.96, p-value = 4e-06</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp3_included <span class="op">%&gt;%</span>
@@ -2870,7 +2870,7 @@ exp3_with_belief <span class="op">%$%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">t2way</span>(you_would <span class="op">~</span><span class="st"> </span>condition <span class="op">*</span><span class="st"> </span>agrees_fac)</code></pre></div>
 <pre><code>## Call:
 ## t2way(formula = you_would ~ condition * agrees_fac)
-## 
+##
 ##                        value p.value
 ## condition             0.0007   0.979
 ## agrees_fac            1.8870   0.172
@@ -2880,7 +2880,7 @@ exp3_with_belief <span class="op">%$%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">t2way</span>(you_should <span class="op">~</span><span class="st"> </span>condition <span class="op">*</span><span class="st"> </span>agrees_fac)</code></pre></div>
 <pre><code>## Call:
 ## t2way(formula = you_should ~ condition * agrees_fac)
-## 
+##
 ##                       value p.value
 ## condition            0.1291   0.720
 ## agrees_fac           0.4057   0.526
@@ -2997,7 +2997,7 @@ exp4_data &lt;-
     <span class="dt">consent =</span> Q1,
     <span class="dt">belief_in_god =</span> Q26_<span class="dv">18</span>,
     <span class="dt">conf_in_existing =</span> Q27_<span class="dv">29</span>, <span class="dt">heard_of_existing =</span> Q29,
-    <span class="dt">michael_should =</span> Q33, <span class="dt">michael_would =</span> Q31, 
+    <span class="dt">michael_should =</span> Q33, <span class="dt">michael_would =</span> Q31,
     <span class="dt">plausible =</span> Q34, <span class="dt">realistic =</span> Q35,
     <span class="dt">common_check =</span> Q36, <span class="dt">proper_check =</span> Q37, <span class="dt">agree_check =</span> Q38,
     <span class="dt">done_before =</span> Q106,
@@ -3401,21 +3401,21 @@ exp4_included &lt;-
 </tbody>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp4_should_lm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">residuals</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">shapiro.test</span>()</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Shapiro-Wilk normality test
-## 
+##
 ## data:  .
 ## W = 0.95, p-value = 3e-06</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp4_would_lm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">residuals</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">shapiro.test</span>()</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Shapiro-Wilk normality test
-## 
+##
 ## data:  .
 ## W = 0.94, p-value = 5e-07</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp4_included <span class="op">%$%</span><span class="st"> </span><span class="kw">t2way</span>(michael_should <span class="op">~</span><span class="st"> </span>common <span class="op">*</span><span class="st"> </span>proper)</code></pre></div>
 <pre><code>## Call:
 ## t2way(formula = michael_should ~ common * proper)
-## 
+##
 ##                 value p.value
 ## common         0.4124   0.523
 ## proper        15.0737   0.001
@@ -3423,7 +3423,7 @@ exp4_included &lt;-
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp4_included <span class="op">%$%</span><span class="st"> </span><span class="kw">t2way</span>(michael_would <span class="op">~</span><span class="st"> </span>common <span class="op">*</span><span class="st"> </span>proper)</code></pre></div>
 <pre><code>## Call:
 ## t2way(formula = michael_would ~ common * proper)
-## 
+##
 ##                 value p.value
 ## common         0.2100   0.648
 ## proper        25.7131   0.001
@@ -3686,7 +3686,7 @@ exp4_included &lt;-
 ## 2        common   1 192  0.03104 488.2 0.01221 0.91214       6.357e-05
 ## 3        proper   1 192 15.08121 488.2 5.93172 0.01578     * 2.997e-02
 ## 4 common:proper   1 192  0.60199 488.2 0.23677 0.62710       1.232e-03
-## 
+##
 ## $`Levene's Test for Homogeneity of Variance`
 ##   DFn DFd   SSn   SSd     F      p p&lt;.05
 ## 1   3 192 4.406 189.2 1.491 0.2184</code></pre>
@@ -3706,7 +3706,7 @@ exp4_included &lt;-
 ## 2        common   1 192  0.1829 523.1  0.06714 7.958e-01       0.0003496
 ## 3        proper   1 192  4.2369 523.1  1.55520 2.139e-01       0.0080349
 ## 4 common:proper   1 192  0.1788 523.1  0.06562 7.981e-01       0.0003416
-## 
+##
 ## $`Levene's Test for Homogeneity of Variance`
 ##   DFn DFd   SSn   SSd      F      p p&lt;.05
 ## 1   3 192 1.029 227.4 0.2897 0.8328</code></pre>
@@ -4530,17 +4530,17 @@ exp5_included &lt;-
 </tbody>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp5_lm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">residuals</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">shapiro.test</span>()</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Shapiro-Wilk normality test
-## 
+##
 ## data:  .
 ## W = 0.98, p-value = 4e-05</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp5_with_belief <span class="op">%$%</span>
 <span class="st">  </span><span class="kw">t3way</span>(composite_trust <span class="op">~</span><span class="st"> </span>condition <span class="op">*</span><span class="st"> </span>explained_belief <span class="op">*</span><span class="st"> </span>theism)</code></pre></div>
 <pre><code>## Call:
-## t3way(formula = composite_trust ~ condition * explained_belief * 
+## t3way(formula = composite_trust ~ condition * explained_belief *
 ##     theism)
-## 
+##
 ##                                     value p.value
 ## condition                          0.2867   0.600
 ## explained_belief                   4.0328   0.046
@@ -4557,16 +4557,16 @@ exp5_included &lt;-
     replicated
   ) <span class="op">%&gt;%</span>
 <span class="st">  </span>psych<span class="op">::</span><span class="kw">alpha</span>(<span class="dt">warnings =</span> <span class="ot">FALSE</span>)</code></pre></div>
-<pre><code>## 
-## Reliability analysis   
+<pre><code>##
+## Reliability analysis
 ## Call: psych::alpha(x = ., warnings = FALSE)
-## 
+##
 ##   raw_alpha std.alpha G6(smc) average_r S/N   ase  mean   sd median_r
 ##       0.69      0.65    0.74      0.21 1.9 0.019 -0.33 0.94     0.37
-## 
+##
 ##  lower alpha upper     95% confidence boundaries
-## 0.66 0.69 0.73 
-## 
+## 0.66 0.69 0.73
+##
 ##  Reliability if an item is dropped:
 ##                raw_alpha std.alpha G6(smc) average_r S/N alpha se var.r
 ## important           0.65      0.61    0.70      0.21 1.6    0.022 0.104
@@ -4584,8 +4584,8 @@ exp5_included &lt;-
 ## gov_funding     0.078
 ## who_funded      0.420
 ## replicated      0.420
-## 
-##  Item statistics 
+##
+##  Item statistics
 ##                  n raw.r std.r  r.cor r.drop   mean  sd
 ## important      539 0.620  0.58  0.491   0.43  0.852 1.6
 ## science_class  539 0.788  0.75  0.756   0.65  0.258 1.7
@@ -4594,7 +4594,7 @@ exp5_included &lt;-
 ## gov_funding    539 0.716  0.68  0.607   0.53 -0.063 1.8
 ## who_funded     539 0.243  0.32  0.153   0.03 -1.677 1.4
 ## replicated     539 0.067  0.17 -0.019  -0.11 -2.087 1.1
-## 
+##
 ## Non missing response frequency for each item
 ##                  -3   -2   -1    0    1    2    3 miss
 ## important      0.04 0.06 0.08 0.15 0.26 0.25 0.15    0
@@ -4608,13 +4608,13 @@ exp5_included &lt;-
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">exp5_with_belief <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">group_by</span>(condition, explained_belief, theism) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select</span>(
-    important, science_class, theology_class, accept, gov_funding, 
+    important, science_class, theology_class, accept, gov_funding,
     who_funded, replicated
   ) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">summarise_all</span>(mean) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">kable</span>(
     <span class="dt">col.names =</span> <span class="kw">c</span>(
-      <span class="st">&quot;condition&quot;</span>, <span class="st">&quot;belief&quot;</span>, <span class="st">&quot;theism&quot;</span>, <span class="st">&quot;important&quot;</span>, <span class="st">&quot;sci. class&quot;</span>, <span class="st">&quot;theo. class&quot;</span>, 
+      <span class="st">&quot;condition&quot;</span>, <span class="st">&quot;belief&quot;</span>, <span class="st">&quot;theism&quot;</span>, <span class="st">&quot;important&quot;</span>, <span class="st">&quot;sci. class&quot;</span>, <span class="st">&quot;theo. class&quot;</span>,
       <span class="st">&quot;accept&quot;</span>, <span class="st">&quot;gov. fund&quot;</span>, <span class="st">&quot;funder&quot;</span>, <span class="st">&quot;replicated&quot;</span>
     )
   )</code></pre></div>
@@ -6411,16 +6411,16 @@ sup_included &lt;-
 </tbody>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sup_included <span class="op">%$%</span><span class="st"> </span><span class="kw">t.test</span>(michael_should <span class="op">~</span><span class="st"> </span>condition, <span class="dt">alternative =</span> <span class="st">&quot;greater&quot;</span>)</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Welch Two Sample t-test
-## 
+##
 ## data:  michael_should by condition
 ## t = 2, df = 150, p-value = 0.02
 ## alternative hypothesis: true difference in means is greater than 0
 ## 95 percent confidence interval:
 ##  0.08595     Inf
 ## sample estimates:
-##             mean in group neutral mean in group implied_abnormality 
+##             mean in group neutral mean in group implied_abnormality
 ##                            0.2105                           -0.2738</code></pre>
 <p>The same effects are seen for predictive judgments, except that there is significant--rather than marginal--evidence for an effect of mechanism type.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sup_would_lm &lt;-
@@ -6623,15 +6623,15 @@ sup_included &lt;-
 </tbody>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">residuals</span>(sup_should_lm) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">shapiro.test</span>()</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Shapiro-Wilk normality test
-## 
+##
 ## data:  .
 ## W = 1, p-value = 0.9</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">residuals</span>(sup_would_lm) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">shapiro.test</span>()</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Shapiro-Wilk normality test
-## 
+##
 ## data:  .
 ## W = 0.99, p-value = 0.3</code></pre>
 <h2 id="belief-reinforcementundermining-4">Belief Reinforcement/Undermining</h2>
@@ -7142,14 +7142,14 @@ sup_included &lt;-
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sup_with_belief <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ggplot</span>(
-    <span class="kw">aes</span>(<span class="dt">x =</span> own_opposing, <span class="dt">y =</span> you_would, 
+    <span class="kw">aes</span>(<span class="dt">x =</span> own_opposing, <span class="dt">y =</span> you_would,
         <span class="dt">group =</span> condition, <span class="dt">color =</span> condition)
   ) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">stat =</span> <span class="st">&quot;summary&quot;</span>, <span class="dt">fun.y =</span> <span class="st">&quot;mean&quot;</span>)</code></pre></div>
 <p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAYAAAB6jN80AAAEGWlDQ1BrQ0dDb2xvclNwYWNlR2VuZXJpY1JHQgAAOI2NVV1oHFUUPrtzZyMkzlNsNIV0qD8NJQ2TVjShtLp/3d02bpZJNtoi6GT27s6Yyc44M7v9oU9FUHwx6psUxL+3gCAo9Q/bPrQvlQol2tQgKD60+INQ6Ium65k7M5lpurHeZe58853vnnvuuWfvBei5qliWkRQBFpquLRcy4nOHj4g9K5CEh6AXBqFXUR0rXalMAjZPC3e1W99Dwntf2dXd/p+tt0YdFSBxH2Kz5qgLiI8B8KdVy3YBevqRHz/qWh72Yui3MUDEL3q44WPXw3M+fo1pZuQs4tOIBVVTaoiXEI/MxfhGDPsxsNZfoE1q66ro5aJim3XdoLFw72H+n23BaIXzbcOnz5mfPoTvYVz7KzUl5+FRxEuqkp9G/Ajia219thzg25abkRE/BpDc3pqvphHvRFys2weqvp+krbWKIX7nhDbzLOItiM8358pTwdirqpPFnMF2xLc1WvLyOwTAibpbmvHHcvttU57y5+XqNZrLe3lE/Pq8eUj2fXKfOe3pfOjzhJYtB/yll5SDFcSDiH+hRkH25+L+sdxKEAMZahrlSX8ukqMOWy/jXW2m6M9LDBc31B9LFuv6gVKg/0Szi3KAr1kGq1GMjU/aLbnq6/lRxc4XfJ98hTargX++DbMJBSiYMIe9Ck1YAxFkKEAG3xbYaKmDDgYyFK0UGYpfoWYXG+fAPPI6tJnNwb7ClP7IyF+D+bjOtCpkhz6CFrIa/I6sFtNl8auFXGMTP34sNwI/JhkgEtmDz14ySfaRcTIBInmKPE32kxyyE2Tv+thKbEVePDfW/byMM1Kmm0XdObS7oGD/MypMXFPXrCwOtoYjyyn7BV29/MZfsVzpLDdRtuIZnbpXzvlf+ev8MvYr/Gqk4H/kV/G3csdazLuyTMPsbFhzd1UabQbjFvDRmcWJxR3zcfHkVw9GfpbJmeev9F08WW8uDkaslwX6avlWGU6NRKz0g/SHtCy9J30o/ca9zX3Kfc19zn3BXQKRO8ud477hLnAfc1/G9mrzGlrfexZ5GLdn6ZZrrEohI2wVHhZywjbhUWEy8icMCGNCUdiBlq3r+xafL549HQ5jH+an+1y+LlYBifuxAvRN/lVVVOlwlCkdVm9NOL5BE4wkQ2SMlDZU97hX86EilU/lUmkQUztTE6mx1EEPh7OmdqBtAvv8HdWpbrJS6tJj3n0CWdM6busNzRV3S9KTYhqvNiqWmuroiKgYhshMjmhTh9ptWhsF7970j/SbMrsPE1suR5z7DMC+P/Hs+y7ijrQAlhyAgccjbhjPygfeBTjzhNqy28EdkUh8C+DU9+z2v/oyeH791OncxHOs5y2AtTc7nb/f73TWPkD/qwBnjX8BoJ98VQNcC+8AAEAASURBVHgB7N0HeFVF2sDxN51UIKQSUBE7dlFw7X1ta1sLtkVBRQV1XV1ddd3yrXV3bUhRsfeKvSuua8W69q4gIb2R3r95R+81PTfJLeec+5/nCbn3lDkzv8klb+bMmYnpNElICCCAAAIIIIAAAgiESSA2TNfhMggggAACCCCAAAIIWAECUH4QEEAAAQQQQAABBMIqQAAaVm4uhgACCCCAAAIIIEAAys8AAggggAACCCCAQFgFCEDDys3FEEAAAQQQQAABBAhA+RlAAAEEEEAAAQQQCKtAfFivFoKLVVZWhiBXsnSaQFxcnCQkJEhTU5PTikZ5EHCsQHx8vOhnp7m52bFlpGDBE9D2zsjICF6G5IRACAVcH4DyH2sIfzoclHVKSookJydLTU2Ng0pFURBwtoD+0aafmzVr1ji7oJQuKAIdHR1ByYdMEAiHALfgw6HMNRBAAAEEEEAAAQT8AgSgfgpeIIAAAggggAACCIRDgAA0HMpcAwEEEEAAAQQQQMAvQADqp+AFAggggAACCCCAQDgECEDDocw1EEAAAQQQQAABBPwCBKB+Cl4ggAACCCCAAAIIhEPA9dMwJSUlhcOJa0RYQOe300R7R7ghuLyrBHQOUE18blzVbMMubExMzLDP5UQEwi3g+gA0NpZO3HD/0ETier7/WGnvSOhzTbcK8Llxa8tRbgS8L+D6ALSxsdH7rUQNRX+R6oTatDc/DAgELqA9oNr7yecmcDM3H6kLD5AQcIsA3YduaSnKiQACCCCAAAIIeESAANQjDUk1EEAAAQQQQAABtwgQgLqlpSgnAggggAACCCDgEQECUI80JNVAAAEEEEAAAQTcIkAA6paWopwIIIAAAggggIBHBAhAPdKQVAMBBBBAAAEEEHCLAAGoW1qKciKAAAIIIIAAAh4RIAD1SENSDQQQQAABBBBAwC0CBKBuaSnKiQACCAxR4J3qGqlsaRniWRyOAAIIhF6AADT0xlwBAQQQCLtAY0eHzPvsS/nHF1+F/dpcEAEEEBhMgAB0MCH2I4AAAi4UuKO4VKpbW2Xu5EkuLD1FRgABrwsQgHq9hakfAghEncCatja5q7RMjszPk3VTU6Ou/lQYAQScL0AA6vw2ooQIIIDAkASWmN7Plo5OmbP2hCGdx8EIIIBAuAQIQMMlzXUQQACBMAiUmdvuD5aVy9E5WZKflBSGK3IJBBBAYOgCBKBDN+MMBBBAwLECi1YXS5zEyO/ychxbRgqGAAIIEIDyM4AAAgh4RGBVc7M8UVEpM03wOSY+3iO1ohoIIOBFAQJQL7YqdUIAgagUmF9YLOlxcfb2e1QCUGkEEHCNAAGoa5qKgiKAAAL9C3zd2CgvVFXLyebJ9xQThJIQQAABJwsQgDq5dSgbAgggEKDAtauKJCchQQ7NygzwDA5DAAEEIidAABo5e66MAAIIBEXgf3X18vqaWjm9IE8SY/lvPSioZIIAAiEV4H+qkPKSOQIIIBB6gfmFRbK2mXJpv8yxob8YV0AAAQSCIEAAGgREskAAAQQiJfDfmjXynukBPXNCvsTFxESqGFwXAQQQGJIAAeiQuDgYAQQQcI5AZ2enLDTzfm6ckiy7js5wTsEoCQIIIDCIAAHoIEDsRgABBJwq8Kx56v2LhkaZV5AvMfR+OrWZKBcCCPQhQADaBwqbEEAAAacLtJvezxtWl8i09DTZPiPd6cWlfAgggEA3AQLQbhy8QQABBNwhsLS8UlaYlY9OG5/njgJTSgQQQKCLAAFoFwxeIoAAAm4QaOnokCVFJbL7mNGyeVqqG4pMGRFAAIFuAgSg3Th4gwACCDhf4N7SciltbZVTx+c6v7CUEAEEEOhDgAC0DxQ2IYAAAk4VqG9vl9tKSuWAcWNlveRkpxaTciGAAAIDChCADsjDTgQQQMBZArcVl0qdCUJPzqf301ktQ2kQQGAoAgSgQ9HiWAQQQCCCAlVtbXKPuf1+eHaWTDArH5EQQAABtwoQgLq15Sg3AghEncBN5sGjDumUE/Nyoq7uVBgBBLwlQADqrfakNggg4FGBkpYWebisQo7NyZashASP1pJqIYBAtAgQgEZLS1NPBBBwtcACs+RmYmyMHJeb7ep6UHgEEEBABQhA+TlAAAEEHC6woqlJnq6oktl5uZIRH+/w0lI8BBBAYHABAtDBjTgCAQQQiKjAdYXFMsYEnkfkZEW0HFwcAQQQCJYAAWiwJMkHAQQQCIHAFw0N8nJ1jcwxS24mx/JfdgiIyRIBBCIgwP9mEUDnkggggECgAtesKpLxiYlyUFZmoKdwHAIIIOB4AQJQxzcRBUQAgWgVeK+2Tt42X3ML8iQhJiZaGag3Agh4UIAA1IONSpUQQMAbAvMLi2TdUUmyz9gx3qgQtUAAAQR+FiAA5UcBAQQQcKDAMjPu83/1DXLWhPESS++nA1uIIiGAwEgECEBHose5CCCAQAgEOjs7ZZGZ93Oz1BTZaXRGCK5AlggggEBkBQhAI+vP1RFAAIFeAk9WVsnXjU0yryC/1z42IIAAAl4QIAD1QitSBwQQ8IxAm+n9vNGs+b5DRrpsm57mmXpREQQQQKCrAAFoVw1eI4AAAhEWeMis976quUVONfN+khBAAAGvChCAerVlqRcCCLhOoKmjQ24pLpG9zVPvU8z4TxICCCDgVQECUK+2LPVCAAHXCdxVUiYVrW1m1aNc15WdAiOAAAJDESAAHYoWxyKAAAIhEqhtb5c7TQCqKx5NGjUqRFchWwQQQMAZAgSgzmgHSoEAAlEucIt58KjR3II/KZ/ezyj/UaD6CESFAAFoVDQzlUQAAScLVLa2yn3m4aOjcrIk36z7TkIAAQS8LkAA6vUWpn4IIOB4gcWm91NXep+Zm+P4slJABBBAIBgCBKDBUCQPBBBAYJgCq82US0vLK+V3udmSmRA/zFw4DQEEEHCXAAGou9qL0iKAgMcErl9dJKmxsXKMCUBJCCCAQLQIEIBGS0tTTwQQcJzAt2a5zWcrq+2DR2lxcY4rHwVCAAEEQiVAABoqWfJFAAEEBhG4rrBIssxt999mjxvkSHYjgAAC3hIIWwDa3Nwsr7/+urzxxhvSap747C/V1NTISy+9JOXl5f0dwnYEEEDA9QKf1DfIqzVr5DSz5GaSuQVPQgABBKJJICz/6zU2NsrMmTNl2bJlctddd8kf//hH6ezs7OWsAeqcOXPku+++k3POOUceeeSRXsewAQEEEPCCwHzT+7lWUqIcMC7TC9WhDggggMCQBMISgN5///0ybdo0ueiii2ThwoXS0NAgb7/9dq+CPvTQQzYAPemkk+TCCy8UPY+EAAIIeE3gDdPzuby2TuYW5Et8jE7AREIAAQSiSyAsc3588803svfee/tlt956a/nss89k+vTp/m36Yvz48bJ8+XLZdtttbYCak9N7TrxFixaJ3s7XtM4668gee+xhX/OPtwUSEhJsBdPS0rxdUWoXFQI3fPWtbJyaKgdPKJCYEAagiWZSe82fz01U/Fj1eWcxOmpOLd0oEJYAtLi4WDIyMvw++nrVqlX+974Xs2fPllmzZsmzzz5r/9NcsmSJb5f/u96Wr6+vt++33357OfDAA/37eOFdAd8v6ZSUFO9WkppFhcATZtL5j0zv5z1Tt5ZUE4SGMvG5CaWu8/L2dc44r2SUCIHeAmEJQOPM9CLt7e3+q7e1tUlycrL/ve/F3Llz5eijj5aDDz5Y3nzzTTnttNPk4Ycf7nbsCy+84Dvcfi8qKur2njfeFNDAU/9wKS0t9WYFqVVUCHSYse9XfvGlbJmWKht3tof851l7PjXI5XMTFT9eoneK+CM9OtraC7UMyxjQrKwsqays9Hvpa73d3jXpU+/6dcghh0h8fLzstNNOorfgP//8866H8RoBBBBwrcBjFZXyXVOznFGQ59o6UHAEEEAgGAJhCUA1mHzmmWekqanJBpk6FdNWW21ly+8LPDVInTBhgnz55Zd2u962r6qqkilTpgSjnuSBAAIIRFSgtaNDbjK333cZnSFbMZY5om3BxRFAIPICYbkFv+eee9o5QGfMmCGxZr67o446SiZNmmRrf+utt9rbBmeddZbMmzdPbrnlFqmrq7ODqXVbUlJS5JUoAQIIIDBCgfvLKqSopVWunvzT/30jzI7TEUAAAVcLxJj5OHtPyBmiKtXW1trxnHqLfaCkDxkFOjifMaADSXpnn28MqPaMkxBwm0CjGQN/wCdfyPSMNLlk0tphK75vDGhJSUnYrsmFIiegY0D1biIJATcIDBwJBrkG6enpAeUYaPAZUGYchAACCERY4PaSMqkxD1+eks/Yzwg3BZdHAAGHCIRlDKhD6koxEEAAgbALaOB5d2mZHGbWe19rFEOKwt4AXBABBBwpQADqyGahUAgg4BWBJUWl0tLRKbPycr1SJeqBAAIIjFiAAHTEhGSAAAII9C1Qah46erCsXI7JzZacxJ9W8+r7SLYigAAC0SVAABpd7U1tEUAgjAKLi4rtWu+/MwEoCQEEEEDgFwEC0F8seIUAAggETeDH5mZ5vLxSTsjLkdGDzPwRtIuSEQIIIOASAQJQlzQUxUQAAXcJzC8skgwTeM7IYVocd7UcpUUAgXAIEICGQ5lrIIBAVAl81dAoL1TVmGmXciUlLi6q6k5lEUAAgUAECEADUeIYBBBAYAgC15rezzzz0NGhWZlDOItDEUAAgegRIACNnrampgggEAaBD+vq5Y01tXL6+DxJMEsPkxBAAAEEegvwv2NvE7YggAACwxbQsZ+TzITz+2aOHXYenIgAAgh4XYAA1OstTP0QQCBsAq9W18j7pgd0XkG+xMXEhO26XAgBBBBwmwABqNtajPIigIAjBTo7O2Xh6hLZJCVZdhsz2pFlpFAIIICAUwQIQJ3SEpQDAQRcLfBMVbV82dhoez9dXREKjwACCIRBgAA0DMhcAgEEvC3QZno/bzC9n9PT02R6Rrq3K0vtEEAAgSAIEIAGAZEsEEAgugWWllfISrPy0WkFedENQe0RQACBAAUIQAOE4jAEEECgL4Hmjg5ZUlQqe5hxn5ulpvZ1CNsQQAABBHoIEID2AOEtAgggMBSBe0vLpay1VU41836SEEAAAQQCEyAADcyJoxBAAIFeAvXt7XJ7SakcOG6sTE4e1Ws/GxBAAAEE+hYgAO3bha0IIIDAoAK3FpdKXXuHnGzWfCchgAACCAQuQAAauBVHIoAAAn6BqrY20dvvR2SPk4KkJP92XiCAAAIIDC5AADq4EUcggAACvQRuNNMudUinnJiX02sfGxBAAAEEBhYgAB3Yh70IIIBAL4HilhZ52Ey9dFxujoxLSOi1nw0IIIAAAgMLEIAO7MNeBBBAoJfAwtXFMio2Vo7Lye61jw0IIIAAAoMLEIAObsQRCCCAgF/gh6YmeaqiSmaZW+/p8XH+7bxAAAEEEAhcgAA0cCuORAABBOS6wiLJTIiXI3Ky0EAAAQQQGKYAAegw4TgNAQSiT+DzhgZZVr1G5uTnSbK5BU9CAAEEEBieAP+DDs+NsxBAIAoFrllVJAWJifKbrMworD1VRgABBIInQAAaPEtyQgABDwu8W1sny83X3II8SYiJ8XBNqRoCCCAQegEC0NAbcwUEEPCAwHwz9nM9s9zm3mPHeKA2VAEBBBCIrAABaGT9uToCCLhA4OWqGvmovkHOKMiXWHo/XdBiFBEBBJwuQADq9BaifAggEFGBjs5OWVRULJunpshOozMiWhYujgACCHhFgADUKy1JPRBAICQCT1ZWyTeNTTLP9H6SEEAAAQSCI0AAGhxHckEAAQ8KtJreT13zfceMdJmanubBGlIlBBBAIDICBKCRceeqCCDgAoGHysql0Kz7fpp58p2EAAIIIBA8AQLQ4FmSEwIIeEigsaNDbikulX3MU+8bp6R4qGZUBQEEEIi8AAFo5NuAEiCAgAMF7i4pk8rWNpkzPteBpaNICCCAgLsFCEDd3X6UHgEEQiBQ29Yud5gA9GCz4tE6o0aF4ApkiQACCES3AAFodLc/tUcAgT4Ebi4ukSZzC/6kfHo/++BhEwIIIDBiAQLQEROSAQIIeEmgorVV7jcPH83IyZI8s+47CQEEEEAg+AIEoME3JUcEEHCxwGIz7VKsxMjMvBwX14KiI4AAAs4WIAB1dvtQOgQQCKNAYXOzPFpRKb/Ly5ax8fFhvDKXQgABBKJLgAA0utqb2iKAwAACC1YXS1pcrByTkz3AUexCAAEEEBipAAHoSAU5HwEEPCHwrVlu89nKapmdlyupcXGeqBOVQAABBJwqQADq1JahXAggEFaBawuLJDshQX6bPS6s1+ViCCCAQDQKEIBGY6tTZwQQ6CbwcX29/LdmjZw2Pk+SYvlvsRsObxBAAIEQCPA/bQhQyRIBBNwlcJ3p/VwrKUn2HzfWXQWntAgggIBLBQhAXdpwFBsBBIIj8Lrp+Xy3tl7mFeRJfExMcDIlFwQQQACBAQUIQAfkYScCCHhdYKF58n3D5GTZY8xor1eV+iGAAAKOESAAdUxTUBAEEAi3wPPmqffPGhrlzAn5EkPvZ7j5uR4CCESxAAFoFDc+VUcgmgXaOztlcVGxbJ2WKttnpEczBXVHAAEEwi5AABp2ci6IAAJOEHjMrHj0fVOzGfuZ74TiUAYEEEAgqgQIQKOquaksAgioQEtHh9xUVCK7js6QLU0PKAkBBBBAILwCBKDh9eZqCCDgAIH7y8qluKVVTjXzfpIQQAABBMIvQAAafnOuiAACERRoaG+XW4vLZP/MsbJBSnIES8KlEUAAgegViHd71ceOZeJot7dhIOWP+3ltbto7EC2OGUjgtm+/l1oThP5xow1krMcDUP3c6NP9fG4G+onwzr62tjbvVIaaeF7A9QFoVVWV5xuJCoqkpKRIRkaG0N78NIxEoMb8gl6y4kc5NCtTMpqbpMp8eTmlpaVJamoqnxsvN3KXuiUkJIi2OQkBNwhwC94NrUQZEUAgKAL64FGbmX5pVl5uUPIjEwQQQACB4QkQgA7PjbMQQMBlAqXmoaMHyyrkmNxsyUlMcFnpKS4CCCDgLQECUG+1J7VBAIF+BBaZJTcTY2PkeBOAkhBAAAEEIitAABpZf66OAAJhEFhpJpx/wkw8f0JejoyOd/3Q9zCIcQkEEEAgtAIEoKH1JXcEEHCAwPWri2zgOSM7ywGloQgIIIAAAgSg/AwggICnBb5saJQXqmrk5PxcSf55Oi9PV5jKIYAAAi4QIAB1QSNRRAQQGL7AtYVFkm8eOtKpl0gIIIAAAs4QIAB1RjtQCgQQCIHAB3V18uaaWjl9fL4kxPLfXQiIyRIBBBAYlgD/Iw+LjZMQQMANAtcVFsu6o5Jk38wxbiguZUQAAQSiRoAANGqamooiEF0C/6mukQ/r6mVeQb7EmuUoSQgggAACzhEgAHVOW1ASBBAIkkCnWe1ooZn3c4pZ633XMaODlCvZIIAAAggES4AANFiS5IMAAo4ReKayWr5qbLK9n44pFAVBAAEEEPALEID6KXiBAAJeENC13m8oKpbpGWkyLSPdC1WiDggggIDnBAhAPdekVAiB6BZ4pLxCVja32Cffo1uC2iOAAALOFSAAdW7bUDIEEBiiQHNHhywpKpE9zbjPTVNThng2hyOAAAIIhEuAADRc0lwHAQRCLnBPabmUt7bJnPF5Ib8WF0AAAQQQGL4AAejw7TgTAQQcJFDX3i63F5fKb8ZlyuTkUQ4qGUVBAAEEEOgpQADaU4T3CCDgSoHbTPBZb27B65rvJAQQQAABZwsQgDq7fSgdAggEIFBpbrvr7fcjssfJ+KTEAM7gEAQQQACBSAoQgEZSn2sjgEBQBG400y51mpxm5eUEJT8yQQABBBAIrQABaGh9yR0BBEIsUNTSIo+UV8rxudmSmZAQ4quRPQIIIIBAMAQIQIOhSB4IIBAxgYWFxZIcGyvHmgCUhAACCCDgDgECUHe0E6VEAIE+BL5vapKnK6tkVn6OpMfF9XEEmxBAAAEEnChAAOrEVqFMfQp01tWKNDWKtLX1uZ+N0SdwXWGRjEuINw8fZUVf5akxAggg4GKBeBeXnaJHmUDzooWS/unH/lp3mtuunaPMfI867s98der3+J+/JyZKp3nt326ClG77+zrHl0fX7z/nYa/hvzIvnCDwaX2DvFK9Rv681gQZZX4WSAgggAAC7hEgAHVPW0V9SRMOOkTqpmwqMW2tIq2tEmO+un63r7vsi6mv++kYs63nsTHD6EXVgFeSkn4KZH1Bqi/g1YDW3ALu1P0atCaaQLhL8GqDXz3n523+93pe1zxsvuZjmWCmEoqJifo2HwjgetP7OcFMufSbrMyBDmMfAggggIADBQhAHdgoFKlvgbgNNpC2jIy+dw5nq5m0XMwYQn9w2iV49Qe2XYLX3tvazLktvwTBzc0SW1dnhgj8EvD+dI4ZMqDbOnWioMBTpwagXQPefoLXX3p5u/QCmwDYbh/wHA10fzlHA2i3pLfW1MpbtXVy+aS1JJ5A3S3NRjkRQAABvwABqJ+CF1EnoD2aKSl2/kit+9DCw2FoacDb0vxLwNujB9cGwv0GwSaI7drrqwGtmX4o5ueA1x/o+o7R/Xq9ISRb/8Sfe3i79OD6emv7DmjNfyFdenB9x3ZqD6727mqAa4Pgn4dAdA1444f/38/C1cWyvlluc++xY4ZQQw5FAAEEEHCKwPB/AzilBpQDAbcIaMA7KtmMW022JQ55wKs9rt0C3p+C2K49tN16cG3w+nNvbY/g2HdOTGPjLwG0BsstJtD1Bc1mLfahJFt/E6h2mvG5/mBVg1YNaM0Y3l+C1597aX8ex/tCcpp8nDZGFrU2SOK7y3uN7f0lCO4aAGu+5jr0lg6liTgWAQQQCJkAAWjIaMkYgQgL2Fv4o8y4VPOglkkhD3j1Ijbg/TnQ7dob2yOg9QetPbbbnlxfQKvn9xjH22G2Xf+rXWXrijLZc9lzQx/WoEGorxfW973PHtwewavvWP1ue3R9QfHP37vk4c9fr8XDUfpTQUIAAQR6CRCA9iJhAwIIDFtAb+GbL18KdtD7uFnx6JsVP8qSDSZL3d572mEJPYcmdHuvAa4OR/g50PXv823r2oOrAa/28K5Z08c5P/cMD3Ucr46rDSB47XaMOb7b+34C3p+O6RJQ63EuGsfr+xnhOwIIRKcAAWh0tju1RsB1Aq0m+LuhqER2HJ0u26Sn/VR+X7D2c22CHfD2QtLZE3zBqwasNrDt8TBalx7c7gHvTz3DvmBYe4FjzINrQR3Hqz2u2hv780NoYv4Y6DhtrnmY7ade8F71YQMCCCAQIQEC0AjBc1kEEBiawINl5bLaPHj178lrD+3EYB6tt9XNV9jG8eq42m4B78/DG3zb9EG0XgHvL0Gy6RM1D9qligxxfG4wycgLAQQQ6EuAALQvFbYhgICjBBrNE/23FJXKr81T7xuZmQuiJuktdfM13HG8CWlpEptqAtCSkqgho6IIIOAOAXO/hoQAAgg4W+CukjKpNre/54zPdXZBKR0CCCCAQEACBKABMXEQAghESmCNCTzvKCmVg82KR2vr0qskBBBAAAHXCxCAur4JqQAC3ha4ubhUWjo65aR8ej+93dLUDgEEokmAADSaWpu6IuAygXLzlPkD5uGjo3KyJFcnpychgAACCHhCgADUE81IJRDwpsBis+RmrMTIzLwcb1aQWiGAAAJRKkAAGqUNT7URcLrAKjNH5mMVlTb4HKvTH5EQQAABBDwjQADqmaakIgh4S2BBYbGkmymIjja330kIIIAAAt4SIAD1VntSGwQ8IfCNWRLzuapqmW0ePEpleUlPtCmVQAABBLoKEIB21eA1Agg4QuDawiLJMcts/jZrnCPKQyEQQAABBIIrQAAaXE9yQwCBEQr8r65eXqupldPG50mirm1OQgABBBDwnAD/u3uuSakQAu4WmG96P9dOSpL9x411d0UoPQIIIIBAvwIEoP3SsAMBBMIt8FrNGnnP9IDOK8iTuJiYcF+e6yGAAAIIhEmAADRM0FwGAQQGFujs7JSFZt7PjVOSZfcxowc+mL0IIIAAAq4WIAB1dfNReAS8I/C8eer984ZGOaMgX2Lo/fROw1ITBBBAoA+BAWd3Li8vl7a2tj5O675p1KhRMmbMmO4beYcAAggEKNBuej8XrS6RbdJSZXpGeoBncRgCCCCAgFsFBgxAd911V/n0008Hrdvhhx8uDzzwwKDHcQACCCDQl8Bj5ZWywqx89Ld1Jva1m20IIIAAAh4TGPAW/MMPPywffvih/frTn/4kG2ywgSxdulS+++47eeONN+Qvf/mLjB8/Xs4880yPsVAdBBAIl0BLR4fcWFQiu47JkC1MDygJAQQQUIHrr79eli9fbjHuu+8+efLJJ/0wLS0t0tTUZN9//PHHcuWVV/r38cIdAgMGoBtuuKFsscUWsvnmm8tNN90k1157rRx88MEyadIk2X777eWvf/2rnHjiiXL11Ve7o7aUEgEEHCdwX1m5lLa22nk/HVc4CoQAAhETmD9/vrz11lv2+nqX9emnn7avq6qqbFyycuVK+14D0H/9618RKycXHp7AgAGoL8tGsyxeTU2NrL/++r5N/u+5ublSWVnpf88LBBBAIFCBhvZ2ua24VPbPHCvrJycHehrHIYBAlAk88sgjsnDhQlvr6upq+fLLL/0CRx99tJSWlvrf88IdAgEFoCkpKbbH89xzz7WBqFZNg9JnnnlGLr/8ctl///3dUVtKiQACjhK4vaRMak0Qesr4XEeVi8IggEBvAX0wWX/nH3jggXL++efLe++95z+o3XyOFy9eLIcccoj85je/kauuukpazZ0NTfr9pJNOssP39Lx99tlH5s6dK0VFRf7z9cXzzz8vs2bNEn2u5Lnnnuu2b8GCBXLXXXdJfX296JBATRdddJG88MIL8vbbb8tZZ53lPz4YZfFnxouQCQQUgOrVb7nlFvn6668lJydH1l13XcnMzJT99tvPfp1xxhkhKyAZI4CANwWqzQwbd5sA9DCz3vsEs/IRCQEEnCuggd++++4rd955p/z617+WZvPQ4A477CDff/+9LbQOx9PgUu+UTp061QaqerzO76sB4ZIlS2y8UFJSYgPUl156Sfbee29/hZ999lm7XY/X8zW/FStW+PdrcPraa69JfHy8HRqoOzbbbDPJy8uTb775xpbLd/BIy+LLh++hFRjwKfiul548ebIdDKwDgj/66CPJyMiQbbfdVjbZZJOuh/X7Wn9Y3333XTu/n56XkJDQ57H6w6kPPmmQ29ct/z5PYiMCCLhO4Cbz4FG7dMqsfHo/Xdd4FDjqBG6++WbR388a7CUmJtr664NAL774omy55ZZyxx13yGOPPWaDSN2pwed2221nt2nAqumII46Qv//97/a1PmOy11572V7Q/Px824N5wQUXyMUXX+w/Vh987pmSzB+rRx11lOixRx55pH04WmMSX3rnnXdGXBZfXnwPrcCAAagGgg0NDd1KoIHjNttsY7fpOAx9Gj4rK8v+EHQ7sMsbvV2vf5FMmTJFVq9eLQ8++KDtnu852fQHH3wgl112mf2h1B/k9dZbT84+++wuOfESAQS8IFBifnE9VFYhx+VmS3Y/f4x6oZ7UAQGvCOjv55122skffGq99La4phtvvFE0MNxjjz3se/1HezG1d1IDQl8AqgGpL6211lr2pfas6pfeYd199919u+3Dzn0FoP4D+nmh5RxJWfrJls0hEBgwAD32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" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sup_with_belief <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ggplot</span>(
-    <span class="kw">aes</span>(<span class="dt">x =</span> own_opposing, <span class="dt">y =</span> you_would, 
+    <span class="kw">aes</span>(<span class="dt">x =</span> own_opposing, <span class="dt">y =</span> you_would,
         <span class="dt">group =</span> discipline, <span class="dt">color =</span> discipline)
   ) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">stat =</span> <span class="st">&quot;summary&quot;</span>, <span class="dt">fun.y =</span> <span class="st">&quot;mean&quot;</span>)</code></pre></div>
@@ -7356,22 +7356,22 @@ sup_included &lt;-
 </tbody>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">residuals</span>(sup_you_would_lm) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">shapiro.test</span>()</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Shapiro-Wilk normality test
-## 
+##
 ## data:  .
 ## W = 0.97, p-value = 0.003</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">residuals</span>(sup_you_should_lm) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">shapiro.test</span>()</code></pre></div>
-<pre><code>## 
+<pre><code>##
 ##  Shapiro-Wilk normality test
-## 
+##
 ## data:  .
 ## W = 0.97, p-value = 0.01</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sup_with_belief <span class="op">%$%</span>
 <span class="st">  </span><span class="kw">t3way</span>(you_would <span class="op">~</span><span class="st"> </span>condition <span class="op">*</span><span class="st"> </span>discipline <span class="op">*</span><span class="st"> </span>own_opposing)</code></pre></div>
 <pre><code>## Call:
 ## t3way(formula = you_would ~ condition * discipline * own_opposing)
-## 
+##
 ##                                    value p.value
 ## condition                         0.2944   0.590
 ## discipline                        1.0868   0.310
@@ -7384,7 +7384,7 @@ sup_included &lt;-
 <span class="st">  </span><span class="kw">t3way</span>(you_would <span class="op">~</span><span class="st"> </span>condition <span class="op">*</span><span class="st"> </span>discipline <span class="op">*</span><span class="st"> </span>own_opposing)</code></pre></div>
 <pre><code>## Call:
 ## t3way(formula = you_would ~ condition * discipline * own_opposing)
-## 
+##
 ##                                    value p.value
 ## condition                         0.2944   0.590
 ## discipline                        1.0868   0.310
