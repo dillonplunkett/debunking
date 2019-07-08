@@ -1,7 +1,7 @@
 # When and why people think beliefs are "debunked" by scientific explanations of their origins
 [Dillon Plunkett](https://dillonplunkett.com), [Lara Buchak](https://larabuchak.net), and [Tania Lombrozo](https://cognition.princeton.edu)
 
-Forthcoming in _Mind & Language_.
+Published in _Mind & Language_ on 27 May 2019: https://doi.org/10.1111/mila.12238.
 
 This repository contains the data collected in our experiments and a script
 that documents and reproduces our analyses.
