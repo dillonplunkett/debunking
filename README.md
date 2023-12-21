@@ -8,7 +8,7 @@ that documents and reproduces our analyses.
 
 ## Manuscript
 The manuscript is available
-[here](https://dillonplunkett.com/papers/debunking_manuscript.pdf) and the
+[here](https://dillonplunkett.com/papers/debunking.pdf) and the
 supplementary materials [here](https://dillonplunkett.com/papers/debunking_supplement.pdf).
 
 ## Data
